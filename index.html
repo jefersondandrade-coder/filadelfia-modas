@@ -11,132 +11,84 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <style>
-        :root { --shopee: #ee4d2d; --bg: #f5f5f5; --white: #fff; --black: #222; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); padding-bottom: 100px; color: var(--black); }
+        :root { --shopee: #ee4d2d; --bg: #f5f5f5; --white: #fff; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); padding-bottom: 80px; }
 
-        /* HEADER */
-        header { background: #ee4d2d; padding: 15px; position: sticky; top:0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        /* HEADER E BUSCA */
+        header { background: #ee4d2d; padding: 15px; position: sticky; top:0; z-index: 1000; }
         .search-box { background: #fff; display: flex; align-items: center; padding: 10px; border-radius: 4px; }
-        .search-box input { border:none; outline:none; flex:1; margin-left: 8px; font-size: 14px; }
+        .search-box input { border:none; outline:none; flex:1; margin-left: 8px; }
 
-        /* BOTÃO WHATSAPP FLUTUANTE */
-        .wpp-float { position: fixed; bottom: 85px; right: 20px; background: #25d366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-decoration: none; }
+        /* WHATSAPP FLUTUANTE */
+        .wpp-btn { position: fixed; bottom: 90px; right: 20px; background: #25d366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-decoration: none; }
 
-        /* ÁREAS DE CONTEÚDO */
-        .container { padding: 10px; max-width: 800px; margin: auto; }
-        .section-title { font-weight: bold; padding: 15px 5px; color: var(--shopee); display: flex; align-items: center; justify-content: space-between; }
-
-        /* PRODUTOS */
-        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .p-card { background: #fff; border-radius: 8px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
-        .p-media { width: 100%; aspect-ratio: 1/1; background: #eee; }
+        /* GRID DE PRODUTOS */
+        .products { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .p-card { background: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        .p-media { aspect-ratio: 1/1; background: #eee; }
         .p-media img, .p-media video { width: 100%; height: 100%; object-fit: cover; }
-        .p-info { padding: 10px; flex-grow: 1; }
-        .p-price { color: var(--shopee); font-size: 18px; font-weight: bold; margin: 5px 0; }
-        .btn-buy { width: 100%; background: var(--shopee); color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .p-info { padding: 10px; }
+        .p-price { color: var(--shopee); font-size: 18px; font-weight: bold; }
+        .btn-add { width: 100%; background: var(--shopee); color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; margin-top: 5px; }
 
-        /* CARRINHO */
-        .cart-modal { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: #fff; z-index: 3000; transition: 0.4s; padding: 20px; }
-        .cart-modal.active { right: 0; }
-        .cart-header { display: flex; justify-content: space-between; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-
-        /* MODAIS DE LOGIN E ADMIN */
-        .full-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:4000; display:none; padding: 20px; overflow-y: auto; }
+        /* MODAIS */
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:4000; display:none; padding: 20px; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display:block; margin-bottom:5px; font-weight:bold; }
         .form-group input { width:100%; padding:12px; border:1px solid #ddd; border-radius:5px; }
-        .btn-main { width:100%; background:var(--shopee); color:white; padding:15px; border:none; border-radius:5px; font-weight:bold; font-size:16px; margin-top:10px; }
-        .btn-close { float: right; font-size: 25px; color: #888; border: none; background: none; }
-
+        .btn-main { width:100%; background:var(--shopee); color:white; padding:15px; border:none; border-radius:5px; font-weight:bold; }
+        
         /* NAV INFERIOR */
-        nav.bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; border-top: 1px solid #ddd; padding: 12px 0; z-index: 1001; }
-        .nav-item { flex: 1; text-align: center; color: #666; font-size: 11px; text-decoration: none; cursor: pointer; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
-        .nav-item.active { color: var(--shopee); }
+        nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; border-top: 1px solid #ddd; padding: 10px 0; z-index: 1001; }
+        .nav-item { flex: 1; text-align: center; color: #666; font-size: 11px; cursor: pointer; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" placeholder="Pesquisar na Filadélfia Modas...">
+        <i class="fas fa-search" style="color:#bbb"></i>
+        <input type="text" placeholder="Buscar na Filadélfia Modas...">
     </div>
 </header>
 
-<a href="https://wa.me/5511985694216" class="wpp-float"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/5511985694216" class="wpp-btn"><i class="fab fa-whatsapp"></i></a>
 
-<div class="container">
-    <div class="section-title">✨ PRODUTOS EM DESTAQUE</div>
-    <div class="products-grid" id="main-grid">
-        </div>
+<div id="product-list" class="products"></div>
+
+<div style="background:#fff; padding:20px; margin:10px; border-radius:8px">
+    <h4 style="color:var(--shopee)">SOBRE NÓS</h4>
+    <p style="font-size:13px; color:#555">Filadélfia Modas Mundial<br>CNPJ: 37.032.413/0001-68</p>
 </div>
 
-<div class="container" style="background: #fff; margin-top: 20px; border-radius: 8px; padding: 20px;">
-    <h3 style="color:var(--shopee)">Sobre a Filadélfia Modas</h3>
-    <p style="font-size: 13px; color: #666; margin: 10px 0;">CNPJ: 37.032.413/0001-68</p>
-    <p style="font-size: 14px; line-height: 1.6;">Somos especialistas em moda feminina premium direto de São Paulo. Nosso compromisso é entregar estilo e qualidade com a agilidade que você merece.</p>
+<div id="modalLogin" class="modal">
+    <h3>Minha Conta</h3><br>
+    <div class="form-group"><input type="email" id="email" placeholder="E-mail"></div>
+    <div class="form-group"><input type="password" id="pass" placeholder="Senha"></div>
+    <button class="btn-main" onclick="entrar()">Entrar / Cadastrar</button><br><br>
+    <button onclick="resetarSenha()" style="background:none; border:none; color:#888">Esqueci minha senha</button>
+    <button onclick="fecharModal('modalLogin')" style="margin-top:20px">Voltar</button>
 </div>
 
-<div id="cartModal" class="cart-modal">
-    <div class="cart-header">
-        <span>Minha Sacola</span>
-        <button onclick="toggleCart()" class="btn-close">&times;</button>
-    </div>
-    <div id="cartItems" style="margin-top: 20px;"></div>
-    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-        <p>Subtotal: <strong id="cartSubtotal">R$ 0,00</strong></p>
-        <p id="freteInfo" style="color: green; font-size: 13px; font-weight: bold;"></p>
-        <button class="btn-main" onclick="finalizarCompra()">Finalizar no WhatsApp</button>
-    </div>
+<div id="modalAdmin" class="modal">
+    <h3>Painel do Vendedor</h3><br>
+    <div class="form-group"><input type="text" id="pNome" placeholder="Nome do Produto"></div>
+    <div class="form-group"><input type="number" id="pPreco" placeholder="Preço R$"></div>
+    <div class="form-group"><input type="text" id="pUrl" placeholder="Link da Imagem ou Vídeo"></div>
+    <button class="btn-main" onclick="salvarNovoProduto()">Publicar Agora</button>
+    <button onclick="fecharModal('modalAdmin')" style="margin-top:20px">Sair do Painel</button>
 </div>
 
-<div id="loginModal" class="full-modal">
-    <button onclick="fecharModal('loginModal')" class="btn-close">&times;</button>
-    <h2 id="authTitle">Acessar Conta</h2>
-    <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="authEmail" placeholder="seu@email.com">
-    </div>
-    <div class="form-group">
-        <label>Senha</label>
-        <input type="password" id="authPass" placeholder="******">
-    </div>
-    <button class="btn-main" id="btnAuth" onclick="handleAuth()">Entrar</button>
-    <p style="text-align: center; margin-top: 20px; font-size: 14px;">
-        <a href="#" onclick="toggleAuthMode()">Não tem conta? Cadastre-se</a><br><br>
-        <a href="#" onclick="resetSenha()" style="color: #888;">Esqueci minha senha</a>
-    </p>
-</div>
-
-<div id="adminModal" class="full-modal">
-    <button onclick="fecharModal('adminModal')" class="btn-close">&times;</button>
-    <h2>Painel do Vendedor</h2>
-    <div class="form-group">
-        <label>Nome do Produto</label>
-        <input type="text" id="pNome">
-    </div>
-    <div class="form-group">
-        <label>Preço (R$)</label>
-        <input type="number" id="pPreco">
-    </div>
-    <div class="form-group">
-        <label>URL da Imagem ou Vídeo (.mp4)</label>
-        <input type="text" id="pUrl">
-    </div>
-    <button class="btn-main" onclick="salvarProduto()">Publicar Produto</button>
-</div>
-
-<nav class="bottom-nav">
-    <div class="nav-item active"><i class="fas fa-home"></i>Início</div>
-    <div class="nav-item" onclick="toggleCart()"><i class="fas fa-shopping-cart"></i>Sacola</div>
-    <div class="nav-item" onclick="abrirLogin()"><i class="fas fa-user"></i>Conta</div>
-    <div class="nav-item" onclick="abrirAdmin()"><i class="fas fa-lock"></i>Vendedor</div>
+<nav>
+    <div class="nav-item" onclick="location.reload()"><i class="fas fa-home"></i>Início</div>
+    <div class="nav-item" onclick="alert('Área de Afiliados em sincronização...')"><i class="fas fa-users"></i>Afiliados</div>
+    <div class="nav-item" onclick="abrirModal('modalLogin')"><i class="fas fa-user"></i>Conta</div>
+    <div class="nav-item" onclick="verificarAdmin()"><i class="fas fa-lock"></i>Admin</div>
 </nav>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE
+    // Cole aqui suas credenciais do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
         authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
@@ -150,26 +102,23 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let carrinho = [];
-    let isLoginMode = true;
-
-    // CARREGAR PRODUTOS
+    // CARREGAR PRODUTOS DO BANCO
     function carregarProdutos() {
-        db.collection("produtos").onSnapshot(snapshot => {
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = "";
-            snapshot.forEach(doc => {
+        db.collection("produtos").onSnapshot(snap => {
+            const list = document.getElementById('product-list');
+            list.innerHTML = "";
+            snap.forEach(doc => {
                 const p = doc.data();
                 const isVideo = p.url.includes('.mp4');
-                grid.innerHTML += `
+                list.innerHTML += `
                     <div class="p-card">
                         <div class="p-media">
                             ${isVideo ? `<video src="${p.url}" autoplay muted loop playsinline></video>` : `<img src="${p.url}">`}
                         </div>
                         <div class="p-info">
-                            <p style="font-size:13px; font-weight:bold">${p.nome}</p>
+                            <p style="font-size:12px">${p.nome}</p>
                             <p class="p-price">R$ ${parseFloat(p.preco).toFixed(2)}</p>
-                            <button class="btn-buy" onclick="addCarrinho('${p.nome}', ${p.preco})">Adicionar</button>
+                            <button class="btn-add" onclick="checkout('${p.nome}', ${p.preco})">COMPRAR</button>
                         </div>
                     </div>
                 `;
@@ -177,97 +126,46 @@
         });
     }
 
-    // LÓGICA DO CARRINHO
-    function addCarrinho(nome, preco) {
-        carrinho.push({nome, preco});
-        atualizarCarrinho();
-        toggleCart();
+    // CHECKOUT E FRETE
+    function checkout(nome, preco) {
+        let freteMsg = preco <= 29.99 ? "Frete GRÁTIS para SP!" : "Consulte frete Melhor Envio.";
+        const msg = encodeURIComponent(`Olá! Quero comprar o produto: ${nome} (R$ ${preco.toFixed(2)}). ${freteMsg}`);
+        window.open(`https://wa.me/5511985694216?text=${msg}`);
     }
 
-    function atualizarCarrinho() {
-        const itensDiv = document.getElementById('cartItems');
-        let total = 0;
-        itensDiv.innerHTML = carrinho.map(i => {
-            total += i.preco;
-            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                        <span>${i.nome}</span> <span>R$ ${i.preco.toFixed(2)}</span>
-                    </div>`;
-        }).join('');
-        
-        document.getElementById('cartSubtotal').innerText = `R$ ${total.toFixed(2)}`;
-        
-        // Regra de Frete Grátis SP
-        if(total > 0 && total <= 29.99) {
-            document.getElementById('freteInfo').innerText = "🚚 Frete GRÁTIS para São Paulo!";
-        } else {
-            document.getElementById('freteInfo').innerText = "Calcular frete via Melhor Envio no checkout";
-        }
+    // AUTH FUNCTIONS
+    function entrar() {
+        const e = document.getElementById('email').value;
+        const s = document.getElementById('pass').value;
+        auth.signInWithEmailAndPassword(e, s).catch(() => auth.createUserWithEmailAndPassword(e, s))
+        .then(() => { alert("Acesso confirmado!"); fecharModal('modalLogin'); });
     }
 
-    function toggleCart() {
-        document.getElementById('cartModal').classList.toggle('active');
+    function resetarSenha() {
+        const e = prompt("E-mail de recuperação:");
+        if(e) auth.sendPasswordResetEmail(e).then(() => alert("Link enviado ao seu e-mail!"));
     }
 
-    function finalizarCompra() {
-        const texto = carrinho.map(i => `${i.nome} (R$ ${i.preco.toFixed(2)})`).join('%0A');
-        const url = `https://wa.me/5511985694216?text=Olá, quero comprar:%0A${texto}`;
-        window.open(url);
+    // ADMIN FUNCTIONS
+    function verificarAdmin() {
+        const s = prompt("Senha Administrativa:");
+        if(s === "123") abrirModal('modalAdmin'); // Altere a senha '123' conforme desejar
     }
 
-    // LOGIN E AUTH
-    function abrirLogin() { document.getElementById('loginModal').style.display = 'block'; }
-    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    function toggleAuthMode() {
-        isLoginMode = !isLoginMode;
-        document.getElementById('authTitle').innerText = isLoginMode ? "Acessar Conta" : "Criar Nova Conta";
-        document.getElementById('btnAuth').innerText = isLoginMode ? "Entrar" : "Cadastrar";
-    }
-
-    function handleAuth() {
-        const email = document.getElementById('authEmail').value;
-        const pass = document.getElementById('authPass').value;
-        if(isLoginMode) {
-            auth.signInWithEmailAndPassword(email, pass).then(() => { alert("Bem-vindo!"); fecharModal('loginModal'); })
-            .catch(e => alert("Erro: " + e.message));
-        } else {
-            auth.createUserWithEmailAndPassword(email, pass).then(() => { alert("Conta criada!"); fecharModal('loginModal'); })
-            .catch(e => alert("Erro: " + e.message));
-        }
-    }
-
-    function resetSenha() {
-        const email = prompt("Digite seu e-mail para recuperação:");
-        if(email) auth.sendPasswordResetEmail(email).then(() => alert("E-mail enviado!")).catch(e => alert(e.message));
-    }
-
-    // ÁREA DO VENDEDOR
-    function abrirAdmin() {
-        const pass = prompt("Senha de Acesso ao Painel:");
-        if(pass === "123") { // Altere aqui para sua senha de preferência
-            document.getElementById('adminModal').style.display = 'block';
-        } else {
-            alert("Acesso negado.");
-        }
-    }
-
-    function salvarProduto() {
+    function salvarNovoProduto() {
         const nome = document.getElementById('pNome').value;
-        const preco = parseFloat(document.getElementById('pPreco').value);
+        const preco = document.getElementById('pPreco').value;
         const url = document.getElementById('pUrl').value;
-        
         if(nome && preco && url) {
             db.collection("produtos").add({ nome, preco, url, data: new Date() })
-            .then(() => {
-                alert("Produto cadastrado!");
-                fecharModal('adminModal');
-            });
+            .then(() => { alert("Sucesso!"); fecharModal('modalAdmin'); });
         }
     }
+
+    function abrirModal(id) { document.getElementById(id).style.display = 'block'; }
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
 
     window.onload = carregarProdutos;
 </script>
-
 </body>
 </html>
-
