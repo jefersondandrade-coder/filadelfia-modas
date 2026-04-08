@@ -3,168 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filadélfia Modas | Nível Profissional</title>
+    <title>Filadélfia Modas | Shop Oficial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
     <style>
-        :root { --primary: #ee4d2d; --bg: #f4f4f4; --footer: #fff; --text: #333; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); padding-bottom: 70px; }
+        :root { --shopee: #ee4d2d; --bg: #f5f5f5; --white: #fff; --black: #222; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--bg); padding-bottom: 100px; color: var(--black); }
 
-        /* HEADER ESTILO APP */
-        header { background: linear-gradient(135deg, #f53d2d 0%, #f63 100%); padding: 12px 15px; position: sticky; top:0; z-index: 1000; }
-        .search-container { background: #fff; display: flex; align-items: center; padding: 10px; border-radius: 4px; gap: 10px; }
-        .search-container input { border:none; outline:none; flex:1; font-size: 14px; }
+        /* HEADER */
+        header { background: #ee4d2d; padding: 15px; position: sticky; top:0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .search-box { background: #fff; display: flex; align-items: center; padding: 10px; border-radius: 4px; }
+        .search-box input { border:none; outline:none; flex:1; margin-left: 8px; font-size: 14px; }
 
-        /* BANNERS E CARROSSEL */
-        .banner-wrapper { width: 100%; height: 180px; overflow-x: auto; display: flex; scroll-snap-type: x mandatory; }
-        .banner-slide { min-width: 100%; scroll-snap-align: start; }
-        .banner-slide img { width: 100%; height: 100%; object-fit: cover; }
+        /* BOTÃO WHATSAPP FLUTUANTE */
+        .wpp-float { position: fixed; bottom: 85px; right: 20px; background: #25d366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-decoration: none; }
 
-        /* CATEGORIAS REDONDAS */
-        .cat-circles { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: #fff; }
-        .circle-item { min-width: 65px; text-align: center; font-size: 11px; font-weight: 600; }
-        .circle-img { width: 55px; height: 55px; border-radius: 50%; background: #fef2f0; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; border: 1px solid #ffdbd4; }
-        .circle-img i { color: var(--primary); font-size: 20px; }
+        /* ÁREAS DE CONTEÚDO */
+        .container { padding: 10px; max-width: 800px; margin: auto; }
+        .section-title { font-weight: bold; padding: 15px 5px; color: var(--shopee); display: flex; align-items: center; justify-content: space-between; }
 
-        /* ÁREA DE RECEBEDORES (PROVA SOCIAL) */
-        .social-proof { background: #fff; padding: 15px; margin: 10px 0; border-top: 3px solid #ffca08; }
-        .proof-title { font-size: 13px; font-weight: 800; margin-bottom: 10px; color: #444; }
-        .proof-scroll { display: flex; overflow-x: auto; gap: 10px; }
-        .proof-video { min-width: 110px; height: 160px; background: #000; border-radius: 8px; position: relative; }
-        .proof-video video { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        /* PRODUTOS */
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .p-card { background: #fff; border-radius: 8px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+        .p-media { width: 100%; aspect-ratio: 1/1; background: #eee; }
+        .p-media img, .p-media video { width: 100%; height: 100%; object-fit: cover; }
+        .p-info { padding: 10px; flex-grow: 1; }
+        .p-price { color: var(--shopee); font-size: 18px; font-weight: bold; margin: 5px 0; }
+        .btn-buy { width: 100%; background: var(--shopee); color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* GRADE DE PRODUTOS */
-        .grid-title { padding: 15px; font-weight: bold; font-size: 14px; color: var(--primary); }
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 10px; }
-        .product-card { background: #fff; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .media-box { width: 100%; aspect-ratio: 1; position: relative; }
-        .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; }
-        .price-tag { padding: 8px; }
-        .p-name { font-size: 12px; height: 32px; overflow: hidden; color: #444; margin-bottom: 5px; }
-        .p-price { color: var(--primary); font-size: 16px; font-weight: bold; }
+        /* CARRINHO */
+        .cart-modal { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: #fff; z-index: 3000; transition: 0.4s; padding: 20px; }
+        .cart-modal.active { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
 
-        /* INSTITUCIONAL / SOBRE MIM */
-        .about-section { background: #fff; padding: 30px 20px; margin-top: 20px; border-top: 1px solid #eee; }
-        .about-section h4 { color: var(--primary); margin-bottom: 15px; font-size: 16px; }
-        .about-section p { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 20px; }
-        .contact-pill { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; text-decoration: none; color: #333; font-size: 13px; }
-        .contact-pill i { font-size: 18px; color: var(--primary); }
+        /* MODAIS DE LOGIN E ADMIN */
+        .full-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:4000; display:none; padding: 20px; overflow-y: auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display:block; margin-bottom:5px; font-weight:bold; }
+        .form-group input { width:100%; padding:12px; border:1px solid #ddd; border-radius:5px; }
+        .btn-main { width:100%; background:var(--shopee); color:white; padding:15px; border:none; border-radius:5px; font-weight:bold; font-size:16px; margin-top:10px; }
+        .btn-close { float: right; font-size: 25px; color: #888; border: none; background: none; }
 
-        /* AFILIADOS E RECEBEDORES */
-        .afiliado-banner { background: #000; color: #fff; padding: 20px; text-align: center; margin: 10px; border-radius: 8px; }
-        .afiliado-btn { background: #ffca08; color: #000; padding: 8px 15px; border-radius: 4px; font-weight: bold; display: inline-block; margin-top: 10px; text-decoration: none; }
-
-        /* FOOTER FIXO */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; border-top: 1px solid #ddd; padding: 10px 0; z-index: 1001; }
-        .nav-item { flex: 1; text-align: center; color: #888; font-size: 10px; text-decoration: none; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 2px; }
-        .nav-item.active { color: var(--primary); }
+        /* NAV INFERIOR */
+        nav.bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; border-top: 1px solid #ddd; padding: 12px 0; z-index: 1001; }
+        .nav-item { flex: 1; text-align: center; color: #666; font-size: 11px; text-decoration: none; cursor: pointer; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: var(--shopee); }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="search-container">
-        <i class="fas fa-search" style="color: #bbb;"></i>
-        <input type="text" placeholder="Buscar na Filadélfia Modas Mundial...">
-        <i class="fas fa-camera" style="color: #bbb;"></i>
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Pesquisar na Filadélfia Modas...">
     </div>
 </header>
 
-<div class="banner-wrapper">
-    <div class="banner-slide"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800"></div>
-    <div class="banner-slide"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800"></div>
-</div>
+<a href="https://wa.me/5511985694216" class="wpp-float"><i class="fab fa-whatsapp"></i></a>
 
-<div class="cat-circles">
-    <div class="circle-item"><div class="circle-img"><i class="fas fa-bolt"></i></div><span>Ofertas</span></div>
-    <div class="circle-item"><div class="circle-img"><i class="fas fa-female"></i></div><span>Feminino</span></div>
-    <div class="circle-item"><div class="circle-img"><i class="fas fa-male"></i></div><span>Masculino</span></div>
-    <div class="circle-item"><div class="circle-img"><i class="fas fa-star"></i></div><span>Novidades</span></div>
-    <div class="circle-item"><div class="circle-img"><i class="fas fa-truck"></i></div><span>Envios</span></div>
-</div>
-
-<div class="social-proof">
-    <div class="proof-title">📸 QUEM JÁ RECEBEU (Depoimentos)</div>
-    <div class="proof-scroll">
-        <div class="proof-video"><video muted loop autoplay src="https://www.w3schools.com/html/mov_bbb.mp4"></video></div>
-        <div class="proof-video"><img src="https://via.placeholder.com/110x160?text=Foto+Cliente" style="width:100%;height:100%;border-radius:8px;object-fit:cover;"></div>
-        <div class="proof-video"><video muted loop autoplay src="https://www.w3schools.com/html/movie.mp4"></video></div>
-    </div>
-</div>
-
-<div class="afiliado-banner">
-    <h3 style="font-size: 14px;">TRABALHE CONOSCO</h3>
-    <p style="font-size: 11px; margin-top: 5px; opacity: 0.8;">Ganhe comissões reais vendendo nossos produtos.</p>
-    <a href="#" class="afiliado-btn" onclick="alert('Área de Afiliados em construção!')">ÁREA DO AFILIADO</a>
-</div>
-
-<div class="grid-title">🔥 MAIS VENDIDOS</div>
-<div class="product-grid" id="main-products">
-    </div>
-
-<div class="about-section">
-    <h4>SOBRE A FILADÉLPHIA MODAS</h4>
-    <p>Somos especialistas em moda feminina e masculina com foco em tendências mundiais. Localizados em São Paulo, enviamos para todo o Brasil com garantia de entrega e qualidade premium.</p>
-    
-    <a href="https://wa.me/5511985694216" class="contact-pill">
-        <i class="fab fa-whatsapp"></i>
-        <span><strong>WhatsApp:</strong> (11) 98569-4216 (Atendimento 24h)</span>
-    </a>
-    
-    <a href="mailto:contato@filadelphiamodas.com.br" class="contact-pill">
-        <i class="fas fa-envelope"></i>
-        <span><strong>E-mail:</strong> suporte@filadelphiamodas.com.br</span>
-    </a>
-
-    <div style="text-align: center; margin-top: 20px;">
-        <p style="font-size: 10px;">CNPJ: 00.000.000/0001-00 | São Paulo - SP</p>
-        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px; font-size: 20px; color: #999;">
-            <i class="fab fa-instagram"></i><i class="fab fa-facebook"></i><i class="fab fa-tiktok"></i>
+<div class="container">
+    <div class="section-title">✨ PRODUTOS EM DESTAQUE</div>
+    <div class="products-grid" id="main-grid">
         </div>
+</div>
+
+<div class="container" style="background: #fff; margin-top: 20px; border-radius: 8px; padding: 20px;">
+    <h3 style="color:var(--shopee)">Sobre a Filadélfia Modas</h3>
+    <p style="font-size: 13px; color: #666; margin: 10px 0;">CNPJ: 37.032.413/0001-68</p>
+    <p style="font-size: 14px; line-height: 1.6;">Somos especialistas em moda feminina premium direto de São Paulo. Nosso compromisso é entregar estilo e qualidade com a agilidade que você merece.</p>
+</div>
+
+<div id="cartModal" class="cart-modal">
+    <div class="cart-header">
+        <span>Minha Sacola</span>
+        <button onclick="toggleCart()" class="btn-close">&times;</button>
     </div>
+    <div id="cartItems" style="margin-top: 20px;"></div>
+    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+        <p>Subtotal: <strong id="cartSubtotal">R$ 0,00</strong></p>
+        <p id="freteInfo" style="color: green; font-size: 13px; font-weight: bold;"></p>
+        <button class="btn-main" onclick="finalizarCompra()">Finalizar no WhatsApp</button>
+    </div>
+</div>
+
+<div id="loginModal" class="full-modal">
+    <button onclick="fecharModal('loginModal')" class="btn-close">&times;</button>
+    <h2 id="authTitle">Acessar Conta</h2>
+    <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="authEmail" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="authPass" placeholder="******">
+    </div>
+    <button class="btn-main" id="btnAuth" onclick="handleAuth()">Entrar</button>
+    <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+        <a href="#" onclick="toggleAuthMode()">Não tem conta? Cadastre-se</a><br><br>
+        <a href="#" onclick="resetSenha()" style="color: #888;">Esqueci minha senha</a>
+    </p>
+</div>
+
+<div id="adminModal" class="full-modal">
+    <button onclick="fecharModal('adminModal')" class="btn-close">&times;</button>
+    <h2>Painel do Vendedor</h2>
+    <div class="form-group">
+        <label>Nome do Produto</label>
+        <input type="text" id="pNome">
+    </div>
+    <div class="form-group">
+        <label>Preço (R$)</label>
+        <input type="number" id="pPreco">
+    </div>
+    <div class="form-group">
+        <label>URL da Imagem ou Vídeo (.mp4)</label>
+        <input type="text" id="pUrl">
+    </div>
+    <button class="btn-main" onclick="salvarProduto()">Publicar Produto</button>
 </div>
 
 <nav class="bottom-nav">
-    <a href="#" class="nav-item active"><i class="fas fa-home"></i>Início</a>
-    <a href="#" class="nav-item"><i class="fas fa-list-ul"></i>Categorias</a>
-    <a href="#" class="nav-item"><i class="fas fa-shopping-bag"></i>Sacola</a>
-    <a href="#" class="nav-item" onclick="adminLogin()"><i class="fas fa-user-circle"></i>Eu</a>
+    <div class="nav-item active"><i class="fas fa-home"></i>Início</div>
+    <div class="nav-item" onclick="toggleCart()"><i class="fas fa-shopping-cart"></i>Sacola</div>
+    <div class="nav-item" onclick="abrirLogin()"><i class="fas fa-user"></i>Conta</div>
+    <div class="nav-item" onclick="abrirAdmin()"><i class="fas fa-lock"></i>Vendedor</div>
 </nav>
 
 <script>
-    // Gerar produtos com opção de vídeo
-    const list = document.getElementById('main-products');
-    for(let i=1; i<=8; i++) {
-        const isVideo = i % 2 === 0; // Exemplo: cada 2 produtos um é vídeo
-        list.innerHTML += `
-            <div class="product-card">
-                <div class="media-box">
-                    ${isVideo ? 
-                        `<video muted loop autoplay src="https://www.w3schools.com/html/movie.mp4"></video>` : 
-                        `<img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&sig=${i}">`
-                    }
-                </div>
-                <div class="price-tag">
-                    <p class="p-name">Produto Filadélfia Premium Modas ${i}</p>
-                    <p class="p-price">R$ ${ (89.90 + i).toFixed(2) }</p>
-                    <button onclick="comprar('${i}')" style="width:100%; background:var(--primary); color:#fff; border:none; padding:5px; border-radius:4px; margin-top:5px; font-size:11px; font-weight:bold;">COMPRAR NO PIX</button>
-                </div>
-            </div>
-        `;
+    // CONFIGURAÇÃO FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
+        authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
+        projectId: "loja-filadelphia-modas-mundial",
+        storageBucket: "loja-filadelphia-modas-mundial.firebasestorage.app",
+        messagingSenderId: "515015337156",
+        appId: "1:515015337156:web:79f689c6849285aa13d591"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    let carrinho = [];
+    let isLoginMode = true;
+
+    // CARREGAR PRODUTOS
+    function carregarProdutos() {
+        db.collection("produtos").onSnapshot(snapshot => {
+            const grid = document.getElementById('main-grid');
+            grid.innerHTML = "";
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                const isVideo = p.url.includes('.mp4');
+                grid.innerHTML += `
+                    <div class="p-card">
+                        <div class="p-media">
+                            ${isVideo ? `<video src="${p.url}" autoplay muted loop playsinline></video>` : `<img src="${p.url}">`}
+                        </div>
+                        <div class="p-info">
+                            <p style="font-size:13px; font-weight:bold">${p.nome}</p>
+                            <p class="p-price">R$ ${parseFloat(p.preco).toFixed(2)}</p>
+                            <button class="btn-buy" onclick="addCarrinho('${p.nome}', ${p.preco})">Adicionar</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
     }
 
-    function comprar(id) {
-        const tel = "5511985694216";
-        const msg = encodeURIComponent(`Olá! Quero comprar o Produto ${id} no PIX. Pode me enviar os dados?`);
-        window.open(`https://wa.me/${tel}?text=${msg}`);
+    // LÓGICA DO CARRINHO
+    function addCarrinho(nome, preco) {
+        carrinho.push({nome, preco});
+        atualizarCarrinho();
+        toggleCart();
     }
 
-    function adminLogin() {
-        const p = prompt("Senha Admin:");
-        if(p === "123") alert("Entrando no Painel Administrativo...");
+    function atualizarCarrinho() {
+        const itensDiv = document.getElementById('cartItems');
+        let total = 0;
+        itensDiv.innerHTML = carrinho.map(i => {
+            total += i.preco;
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:10px">
+                        <span>${i.nome}</span> <span>R$ ${i.preco.toFixed(2)}</span>
+                    </div>`;
+        }).join('');
+        
+        document.getElementById('cartSubtotal').innerText = `R$ ${total.toFixed(2)}`;
+        
+        // Regra de Frete Grátis SP
+        if(total > 0 && total <= 29.99) {
+            document.getElementById('freteInfo').innerText = "🚚 Frete GRÁTIS para São Paulo!";
+        } else {
+            document.getElementById('freteInfo').innerText = "Calcular frete via Melhor Envio no checkout";
+        }
     }
+
+    function toggleCart() {
+        document.getElementById('cartModal').classList.toggle('active');
+    }
+
+    function finalizarCompra() {
+        const texto = carrinho.map(i => `${i.nome} (R$ ${i.preco.toFixed(2)})`).join('%0A');
+        const url = `https://wa.me/5511985694216?text=Olá, quero comprar:%0A${texto}`;
+        window.open(url);
+    }
+
+    // LOGIN E AUTH
+    function abrirLogin() { document.getElementById('loginModal').style.display = 'block'; }
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('authTitle').innerText = isLoginMode ? "Acessar Conta" : "Criar Nova Conta";
+        document.getElementById('btnAuth').innerText = isLoginMode ? "Entrar" : "Cadastrar";
+    }
+
+    function handleAuth() {
+        const email = document.getElementById('authEmail').value;
+        const pass = document.getElementById('authPass').value;
+        if(isLoginMode) {
+            auth.signInWithEmailAndPassword(email, pass).then(() => { alert("Bem-vindo!"); fecharModal('loginModal'); })
+            .catch(e => alert("Erro: " + e.message));
+        } else {
+            auth.createUserWithEmailAndPassword(email, pass).then(() => { alert("Conta criada!"); fecharModal('loginModal'); })
+            .catch(e => alert("Erro: " + e.message));
+        }
+    }
+
+    function resetSenha() {
+        const email = prompt("Digite seu e-mail para recuperação:");
+        if(email) auth.sendPasswordResetEmail(email).then(() => alert("E-mail enviado!")).catch(e => alert(e.message));
+    }
+
+    // ÁREA DO VENDEDOR
+    function abrirAdmin() {
+        const pass = prompt("Senha de Acesso ao Painel:");
+        if(pass === "123") { // Altere aqui para sua senha de preferência
+            document.getElementById('adminModal').style.display = 'block';
+        } else {
+            alert("Acesso negado.");
+        }
+    }
+
+    function salvarProduto() {
+        const nome = document.getElementById('pNome').value;
+        const preco = parseFloat(document.getElementById('pPreco').value);
+        const url = document.getElementById('pUrl').value;
+        
+        if(nome && preco && url) {
+            db.collection("produtos").add({ nome, preco, url, data: new Date() })
+            .then(() => {
+                alert("Produto cadastrado!");
+                fecharModal('adminModal');
+            });
+        }
+    }
+
+    window.onload = carregarProdutos;
 </script>
 
 </body>
 </html>
+
