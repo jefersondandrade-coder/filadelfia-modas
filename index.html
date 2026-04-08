@@ -3,57 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filadélfia Modas | Nível Profissional</title>
+    <title>Filadélfia Modas | Painel Ativo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #ee4d2d; --bg: #f4f4f4; --footer: #fff; --text: #333; }
+        :root { --primary: #ee4d2d; --bg: #f4f4f4; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); padding-bottom: 70px; }
+        body { background: var(--bg); padding-top: 70px; }
 
-        /* HEADER */
-        header { background: linear-gradient(135deg, #f53d2d 0%, #f63 100%); padding: 12px 15px; position: sticky; top:0; z-index: 1000; }
-        .search-container { background: #fff; display: flex; align-items: center; padding: 10px; border-radius: 4px; gap: 10px; }
-        .search-container input { border:none; outline:none; flex:1; font-size: 14px; }
+        /* HEADER REORGANIZADO: ÍCONES AO LADO DA LUPA */
+        header { 
+            background: linear-gradient(135deg, #f53d2d 0%, #f63 100%); 
+            padding: 10px; 
+            position: fixed; 
+            top:0; width: 100%; 
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-container { 
+            background: #fff; 
+            display: flex; 
+            align-items: center; 
+            padding: 8px; 
+            border-radius: 4px; 
+            flex: 1;
+        }
+        .search-container input { border:none; outline:none; width: 100%; font-size: 14px; }
+        .header-icons { display: flex; gap: 12px; color: white; font-size: 20px; }
+        .header-icons i { cursor: pointer; }
 
-        /* BANNERS */
-        .banner-wrapper { width: 100%; height: 120px; background: #ddd; margin: 10px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .banner-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        /* CARROSSEL AUTOMÁTICO */
+        .carousel { width: 100%; height: 180px; overflow: hidden; position: relative; margin-bottom: 10px; }
+        .carousel-inner { display: flex; transition: 0.5s; height: 100%; }
+        .carousel-item { min-width: 100%; height: 100%; }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* CATEGORIAS */
-        .categories { display: flex; overflow-x: auto; padding: 15px; gap: 15px; background: #fff; scrollbar-width: none; }
-        .cat-item { min-width: 60px; text-align: center; }
-        .cat-icon { width: 45px; height: 45px; background: #fceee9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; color: var(--primary); }
-        .cat-item p { font-size: 10px; font-weight: 500; }
-
-        /* VÍDEOS / DEPOIMENTOS */
-        .section-title { padding: 15px 15px 5px; font-size: 12px; font-weight: bold; color: #555; }
-        .video-grid { display: flex; overflow-x: auto; padding: 0 10px 15px; gap: 10px; scrollbar-width: none; }
-        .video-card { min-width: 100px; height: 150px; background: #000; border-radius: 8px; overflow: hidden; position: relative; }
-        .video-card video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* BANNER AFILIADO */
-        .affiliate-section { background: #000; color: #fff; padding: 15px; margin: 10px; border-radius: 8px; text-align: center; cursor: pointer; }
-        .affiliate-section h4 { font-size: 14px; margin-bottom: 5px; }
-        .affiliate-section button { background: #ffc107; border: none; padding: 8px 20px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-
-        /* PRODUTOS */
+        /* PRODUTOS E MÍDIA */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; }
-        .product-card { background: #fff; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .media-box { aspect-ratio: 1/1; background: #f9f9f9; overflow: hidden; }
+        .product-card { background: #fff; border-radius: 4px; overflow: hidden; position: relative; }
+        .media-box { aspect-ratio: 1/1; background: #eee; }
         .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; }
-        .price-tag { padding: 8px; }
-        .p-name { font-size: 11px; color: #333; height: 30px; overflow: hidden; }
-        .p-price { color: var(--primary); font-size: 15px; font-weight: bold; margin-top: 5px; }
 
-        /* FOOTER NAV */
-        nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; border-top: 1px solid #eee; padding: 8px 0; z-index: 1000; }
-        .nav-link { flex: 1; text-align: center; color: #666; font-size: 10px; text-decoration: none; }
-        .nav-link i { font-size: 20px; display: block; margin-bottom: 2px; }
-        .nav-link.active { color: var(--primary); }
-
-        /* BOTÃO TÉCNICO */
-        .admin-access { padding: 20px; text-align: center; margin-bottom: 20px; }
-        .btn-tech { opacity: 0.4; background: none; border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; }
+        /* MODAL DE EDIÇÃO (PAINEL ADM) */
+        .admin-panel { 
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
+            background: white; z-index: 2000; padding: 20px; overflow-y: auto;
+        }
+        .admin-panel input, .admin-panel select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; font-weight: bold; }
+        .logout-btn { color: red; margin-top: 20px; display: block; text-align: center; }
     </style>
 </head>
 <body>
@@ -61,108 +60,106 @@
 <header>
     <div class="search-container">
         <i class="fas fa-search" style="color:#ccc"></i>
-        <input type="text" placeholder="Buscar na Filadélfia Modas...">
-        <i class="fas fa-camera" style="color:var(--primary)"></i>
+        <input type="text" id="searchInput" placeholder="Buscar na Filadélfia..." onkeyup="filtrar()">
+    </div>
+    <div class="header-icons">
+        <i class="fas fa-home" onclick="location.reload()"></i>
+        <i class="fas fa-shopping-cart" onclick="abrirCheckout()"></i>
+        <i class="fas fa-user-circle" id="userIcon" onclick="verificarAcesso()"></i>
     </div>
 </header>
 
-<div class="banner-wrapper">
-    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800" alt="Banner Principal">
-</div>
-
-<div class="categories">
-    <div class="cat-item"><div class="cat-icon"><i class="fas fa-bolt"></i></div><p>Ofertas</p></div>
-    <div class="cat-item"><div class="cat-icon"><i class="fas fa-venus"></i></div><p>Feminino</p></div>
-    <div class="cat-item"><div class="cat-icon"><i class="fas fa-mars"></i></div><p>Masculino</p></div>
-    <div class="cat-item"><div class="cat-icon"><i class="fas fa-star"></i></div><p>Novidades</p></div>
-    <div class="cat-item"><div class="cat-icon"><i class="fas fa-truck"></i></div><p>Envios</p></div>
-</div>
-
-<p class="section-title">📸 QUEM JÁ RECEBEU (Depoimentos)</p>
-<div class="video-grid" id="video-feed">
+<div class="carousel">
+    <div class="carousel-inner" id="carouselInner">
+        <div class="carousel-item"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"></div>
+        <div class="carousel-item"><img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"></div>
     </div>
-
-<div class="affiliate-section" onclick="abrirAreaAfiliado()">
-    <h4>TRABALHE CONOSCO</h4>
-    <p style="font-size: 11px; margin-bottom: 10px;">Ganhe comissões reais vendendo nossos produtos.</p>
-    <button>ÁREA DO AFILIADO</button>
 </div>
 
-<p class="section-title">🔥 MAIS VENDIDOS</p>
-<div class="product-grid" id="main-products">
+<div class="product-grid" id="productGrid">
+    <div class="product-card" id="item-video-destaque">
+        <div class="media-box">
+            <video muted loop autoplay playsinline src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+        </div>
+        <div style="padding:8px">
+            <p style="font-size:11px">Destaque Coleção</p>
+            <button onclick="abrirCheckout()" style="width:100%; background:black; color:white; border:none; padding:5px; margin-top:5px;">VER DETALHES</button>
+        </div>
     </div>
-
-<div class="admin-access">
-    <button class="btn-tech" onclick="liberarConfiguracoes()">
-        <i class="fas fa-cog"></i> Configurações Técnicas
-    </button>
 </div>
 
-<nav>
-    <a href="#" class="nav-link active"><i class="fas fa-home"></i>Início</a>
-    <a href="#" class="nav-link"><i class="fas fa-list"></i>Categorias</a>
-    <a href="#" class="nav-link"><i class="fas fa-shopping-bag"></i>Sacola</a>
-    <a href="#" class="nav-link" onclick="liberarConfiguracoes()"><i class="fas fa-user"></i>Eu</a>
-</nav>
+<div id="adminPanel" class="admin-panel">
+    <h2>Configurações da Loja</h2>
+    <p>Olá, Administrador</p>
+    <hr><br>
+    <h4>Adicionar Novo Produto/Vídeo</h4>
+    <input type="text" id="editNome" placeholder="Nome do Produto">
+    <input type="text" id="editPreco" placeholder="Preço (Ex: 99.90)">
+    <input type="text" id="editLink" placeholder="Link da Foto ou Vídeo (MP4)">
+    <select id="editTipo">
+        <option value="foto">Foto</option>
+        <option value="video">Vídeo</option>
+    </select>
+    <button class="btn-save" onclick="salvarAlteracao()">PUBLICAR NO SITE</button>
+    
+    <a href="#" class="logout-btn" onclick="sair()">Sair da Conta ADM</a>
+    <button onclick="fecharAdmin()" style="margin-top:20px; width:100%;">Voltar para a Loja</button>
+</div>
 
 <script>
-    // 1. CARREGAMENTO DE DEPOIMENTOS (VÍDEOS)
-    const videoFeed = document.getElementById('video-feed');
-    const linksVideos = [
-        "https://www.w3schools.com/html/mov_bbb.mp4",
-        "https://www.w3schools.com/html/movie.mp4"
-    ];
+    // 1. LÓGICA DO CARROSSEL
+    let index = 0;
+    const slides = document.getElementById('carouselInner');
+    setInterval(() => {
+        index = (index + 1) % 2; 
+        slides.style.transform = `translateX(-${index * 100}%)`;
+    }, 3000);
 
-    linksVideos.forEach(link => {
-        videoFeed.innerHTML += `
-            <div class="video-card">
-                <video muted loop autoplay playsinline src="${link}"></video>
-            </div>
-        `;
-    });
-
-    // 2. CARREGAMENTO DE PRODUTOS
-    const list = document.getElementById('main-products');
-    for(let i=1; i<=6; i++) {
-        const precoBase = 90.90 + i;
-        list.innerHTML += `
-            <div class="product-card">
-                <div class="media-box">
-                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&sig=${i}">
-                </div>
-                <div class="price-tag">
-                    <p class="p-name">Produto Filadélfia Premium Modas ${i}</p>
-                    <p class="p-price">R$ ${precoBase.toFixed(2)}</p>
-                    <button onclick="comprar('${i}', ${precoBase})" style="width:100%; background:var(--primary); color:#fff; border:none; padding:8px; border-radius:4px; margin-top:5px; font-size:11px; font-weight:bold; cursor:pointer;">COMPRAR NO PIX</button>
-                </div>
-            </div>
-        `;
-    }
-
-    // 3. FUNÇÕES DE INTERAÇÃO
-    function comprar(id, preco) {
-        const tel = "5511985694216";
-        const msg = encodeURIComponent(`Olá! Quero comprar o Produto ${id} (R$ ${preco.toFixed(2)}) que vi no site.`);
-        window.open(`https://wa.me/${tel}?text=${msg}`);
-    }
-
-    function abrirAreaAfiliado() {
-        // Substitua pelo link do seu bot ou formulário de afiliados
-        alert("Redirecionando para o sistema de Afiliados Filadélfia...");
-        // window.location.href = "LINK_DO_SEU_BOT_AQUI";
-    }
-
-    // 4. LIBERAÇÃO DE CONFIGURAÇÕES (ADMIN)
-    function liberarConfiguracoes() {
-        let senha = prompt("Digite a senha de administrador para acessar as configurações manuais:");
-        if(senha === "123") {
-            alert("Acesso Liberado! Você agora pode realizar as alterações manuais no estoque e links de pagamento.");
-            // Aqui você pode adicionar um redirecionamento para o seu painel Firebase ou abrir um modal de edição
-        } else if (senha !== null) {
-            alert("Senha incorreta. Acesso negado.");
+    // 2. BUSCA FUNCIONANDO
+    function filtrar() {
+        let input = document.getElementById('searchInput').value.toLowerCase();
+        let cards = document.getElementsByClassName('product-card');
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].innerText.toLowerCase();
+            cards[i].style.display = name.includes(input) ? "block" : "none";
         }
     }
-</script>
 
+    // 3. SISTEMA DE ACESSO E SAÍDA
+    let isAdmin = false;
+
+    function verificarAcesso() {
+        if (!isAdmin) {
+            let senha = prompt("Senha Admin:");
+            if (senha === "123") {
+                isAdmin = true;
+                document.getElementById('adminPanel').style.display = 'block';
+            }
+        } else {
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+    }
+
+    function sair() {
+        isAdmin = false;
+        alert("Você saiu da conta adm.");
+        location.reload();
+    }
+
+    function fecharAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
+
+    // 4. CHECKOUT (DIRECIONAMENTO)
+    function abrirCheckout() {
+        // Como você quer um checkout real, aqui você pode integrar o link do Mercado Pago ou Stripe
+        // Por enquanto, redireciona para uma confirmação
+        let confirmar = confirm("Ir para o pagamento seguro?");
+        if(confirmar) window.open("https://wa.me/5511985694216?text=Quero+finalizar+meu+carrinho");
+    }
+
+    function salvarAlteracao() {
+        alert("Conectando ao banco de dados para salvar...");
+        // Aqui entra a função db.collection('produtos').add({...}) que vimos antes
+    }
+</script>
 </body>
 </html>
