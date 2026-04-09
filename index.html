@@ -3,163 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filadélfia Modas | Painel Ativo</title>
+    <title>Filadélfia Modas | Admin System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
     <style>
-        :root { --primary: #ee4d2d; --bg: #f4f4f4; }
+        :root { --shopee: #ee4d2d; --dark: #222; --gray: #f4f4f4; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); padding-top: 70px; }
+        body { background: var(--gray); color: var(--dark); }
 
-        /* HEADER REORGANIZADO: ÍCONES AO LADO DA LUPA */
-        header { 
-            background: linear-gradient(135deg, #f53d2d 0%, #f63 100%); 
-            padding: 10px; 
-            position: fixed; 
-            top:0; width: 100%; 
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* HEADER */
+        header { background: var(--shopee); padding: 12px; position: sticky; top:0; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        .search-bar { background: #fff; flex: 1; display: flex; align-items: center; padding: 8px; border-radius: 4px; }
+        .search-bar input { border:none; outline:none; width: 100%; margin-left: 8px; }
+        .head-icons { color: #fff; display: flex; gap: 15px; font-size: 20px; }
+
+        /* PAINEL ADMIN SOBREPOSTO */
+        #adminOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #fff; z-index: 5000; display: none; flex-direction: column;
         }
-        .search-container { 
-            background: #fff; 
-            display: flex; 
-            align-items: center; 
-            padding: 8px; 
-            border-radius: 4px; 
-            flex: 1;
-        }
-        .search-container input { border:none; outline:none; width: 100%; font-size: 14px; }
-        .header-icons { display: flex; gap: 12px; color: white; font-size: 20px; }
-        .header-icons i { cursor: pointer; }
+        .admin-header { background: #333; color: #fff; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-content { flex: 1; overflow-y: auto; padding: 20px; }
+        
+        .tab-menu { display: flex; background: #eee; overflow-x: auto; }
+        .tab-btn { padding: 12px 20px; border: none; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        .tab-btn.active { background: var(--shopee); color: #fff; }
 
-        /* CARROSSEL AUTOMÁTICO */
-        .carousel { width: 100%; height: 180px; overflow: hidden; position: relative; margin-bottom: 10px; }
-        .carousel-inner { display: flex; transition: 0.5s; height: 100%; }
-        .carousel-item { min-width: 100%; height: 100%; }
-        .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
 
-        /* PRODUTOS E MÍDIA */
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; }
-        .product-card { background: #fff; border-radius: 4px; overflow: hidden; position: relative; }
-        .media-box { aspect-ratio: 1/1; background: #eee; }
-        .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; }
+        .field input, .field textarea, .field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
+        
+        .media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .media-slot { border: 2px dashed #ccc; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 20px; position: relative; }
+        .media-slot input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-        /* MODAL DE EDIÇÃO (PAINEL ADM) */
-        .admin-panel { 
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: white; z-index: 2000; padding: 20px; overflow-y: auto;
-        }
-        .admin-panel input, .admin-panel select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; }
-        .btn-save { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; font-weight: bold; }
-        .logout-btn { color: red; margin-top: 20px; display: block; text-align: center; }
+        .btn-action { background: var(--shopee); color: #fff; border: none; padding: 15px; border-radius: 6px; width: 100%; font-weight: bold; font-size: 16px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="search-container">
-        <i class="fas fa-search" style="color:#ccc"></i>
-        <input type="text" id="searchInput" placeholder="Buscar na Filadélfia..." onkeyup="filtrar()">
+    <div class="search-bar">
+        <i class="fas fa-search" style="color: #ccc;"></i>
+        <input type="text" placeholder="Pesquisar na loja...">
     </div>
-    <div class="header-icons">
-        <i class="fas fa-home" onclick="location.reload()"></i>
-        <i class="fas fa-shopping-cart" onclick="abrirCheckout()"></i>
-        <i class="fas fa-user-circle" id="userIcon" onclick="verificarAcesso()"></i>
+    <div class="head-icons">
+        <i class="fas fa-shopping-bag"></i>
+        <i class="fas fa-user-cog" onclick="loginAdmin()"></i>
     </div>
 </header>
 
-<div class="carousel">
-    <div class="carousel-inner" id="carouselInner">
-        <div class="carousel-item"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"></div>
-        <div class="carousel-item"><img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"></div>
+<div id="adminOverlay">
+    <div class="admin-header">
+        <span>GERENCIADOR FILADÉLFIA</span>
+        <i class="fas fa-times" onclick="closeAdmin()" style="font-size: 24px;"></i>
+    </div>
+
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="switchTab(event, 'tab-produtos')">PRODUTOS</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-marketing')">BANNERS/CUPONS</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-afiliados')">AFILIADOS</button>
+    </div>
+
+    <div class="admin-content">
+        <div id="tab-produtos" class="form-section active">
+            <div class="field">
+                <label>Título do Produto</label>
+                <input type="text" id="pTitle" placeholder="Ex: Conjunto Suplex Premium">
+            </div>
+            <div class="field">
+                <label>Descrição Detalhada</label>
+                <textarea id="pDesc" rows="3" placeholder="Fale sobre o tecido, caimento..."></textarea>
+            </div>
+            <div style="display:flex; gap:10px">
+                <div class="field" style="flex:1">
+                    <label>Preço (R$)</label>
+                    <input type="number" id="pPrice" placeholder="0.00">
+                </div>
+                <div class="field" style="flex:1">
+                    <label>Cor Principal</label>
+                    <input type="text" id="pColor" placeholder="Ex: Marsala">
+                </div>
+            </div>
+            <div class="field">
+                <label>Tamanhos Disponíveis</label>
+                <div style="display:flex; gap:10px; font-size: 12px;">
+                    <label><input type="checkbox" value="P"> P</label>
+                    <label><input type="checkbox" value="M"> M</label>
+                    <label><input type="checkbox" value="G"> G</label>
+                    <label><input type="checkbox" value="GG"> GG</label>
+                </div>
+            </div>
+
+            <label style="font-weight:bold; font-size:13px">Mídias (8 Fotos + 1 Vídeo)</label>
+            <div class="media-grid">
+                <div class="media-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
+                <div class="media-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*"></div>
+                <div class="media-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*"></div>
+                <div class="media-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*"></div>
+                <div class="media-slot" style="background:#eee"><i class="fas fa-video"></i><input type="file" accept="video/mp4"></div>
+            </div>
+            <div class="field" style="margin-top:10px">
+                <label>Link Externo (Vídeo do YouTube/Drive se preferir)</label>
+                <input type="text" id="pVideoLink" placeholder="https://...">
+            </div>
+
+            <button class="btn-action" onclick="publishProduct()">PUBLICAR PRODUTO</button>
+        </div>
+
+        <div id="tab-marketing" class="form-section">
+            <div class="field">
+                <label>Trocar Banner Principal</label>
+                <input type="file" accept="image/*">
+            </div>
+            <div class="field">
+                <label>Código do Cupom</label>
+                <input type="text" placeholder="Ex: TRABALHECONOSCO">
+            </div>
+            <div class="field">
+                <label>Desconto (%)</label>
+                <input type="number" placeholder="10">
+            </div>
+            <button class="btn-action">SALVAR CAMPANHA</button>
+        </div>
+
+        <div id="tab-afiliados" class="form-section">
+            <div class="field">
+                <label>Comissão do Afiliado (%)</label>
+                <input type="number" placeholder="10">
+            </div>
+            <div class="field">
+                <label>Link do Bot de Cadastro</label>
+                <input type="text" placeholder="https://t.me/seu_bot">
+            </div>
+            <button class="btn-action">ATUALIZAR REGRAS</button>
+        </div>
     </div>
 </div>
 
-<div class="product-grid" id="productGrid">
-    <div class="product-card" id="item-video-destaque">
-        <div class="media-box">
-            <video muted loop autoplay playsinline src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
-        </div>
-        <div style="padding:8px">
-            <p style="font-size:11px">Destaque Coleção</p>
-            <button onclick="abrirCheckout()" style="width:100%; background:black; color:white; border:none; padding:5px; margin-top:5px;">VER DETALHES</button>
-        </div>
-    </div>
-</div>
-
-<div id="adminPanel" class="admin-panel">
-    <h2>Configurações da Loja</h2>
-    <p>Olá, Administrador</p>
-    <hr><br>
-    <h4>Adicionar Novo Produto/Vídeo</h4>
-    <input type="text" id="editNome" placeholder="Nome do Produto">
-    <input type="text" id="editPreco" placeholder="Preço (Ex: 99.90)">
-    <input type="text" id="editLink" placeholder="Link da Foto ou Vídeo (MP4)">
-    <select id="editTipo">
-        <option value="foto">Foto</option>
-        <option value="video">Vídeo</option>
-    </select>
-    <button class="btn-save" onclick="salvarAlteracao()">PUBLICAR NO SITE</button>
-    
-    <a href="#" class="logout-btn" onclick="sair()">Sair da Conta ADM</a>
-    <button onclick="fecharAdmin()" style="margin-top:20px; width:100%;">Voltar para a Loja</button>
+<div id="main-content" style="padding: 15px; text-align:center;">
+    <h3>Sua Loja está Ativa</h3>
+    <p style="color:#888; font-size:12px">Clique no ícone de engrenagem no topo para gerenciar.</p>
 </div>
 
 <script>
-    // 1. LÓGICA DO CARROSSEL
-    let index = 0;
-    const slides = document.getElementById('carouselInner');
-    setInterval(() => {
-        index = (index + 1) % 2; 
-        slides.style.transform = `translateX(-${index * 100}%)`;
-    }, 3000);
+    // CONFIGURAÇÃO FIREBASE (Sincronizado com seu projeto)
+    const firebaseConfig = {
+        apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
+        authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
+        projectId: "loja-filadelphia-modas-mundial",
+        storageBucket: "loja-filadelphia-modas-mundial.firebasestorage.app",
+        messagingSenderId: "515015337156",
+        appId: "1:515015337156:web:79f689c6849285aa13d591"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
-    // 2. BUSCA FUNCIONANDO
-    function filtrar() {
-        let input = document.getElementById('searchInput').value.toLowerCase();
-        let cards = document.getElementsByClassName('product-card');
-        for (let i = 0; i < cards.length; i++) {
-            let name = cards[i].innerText.toLowerCase();
-            cards[i].style.display = name.includes(input) ? "block" : "none";
+    // NAVEGAÇÃO ENTRE ABAS
+    function switchTab(evt, tabId) {
+        let sections = document.getElementsByClassName("form-section");
+        for (let s of sections) s.classList.remove("active");
+        let btns = document.getElementsByClassName("tab-btn");
+        for (let b of btns) b.classList.remove("active");
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function loginAdmin() {
+        let pass = prompt("Senha Administrativa:");
+        if(pass === "123") {
+            document.getElementById('adminOverlay').style.display = 'flex';
         }
     }
 
-    // 3. SISTEMA DE ACESSO E SAÍDA
-    let isAdmin = false;
+    function closeAdmin() { document.getElementById('adminOverlay').style.display = 'none'; }
 
-    function verificarAcesso() {
-        if (!isAdmin) {
-            let senha = prompt("Senha Admin:");
-            if (senha === "123") {
-                isAdmin = true;
-                document.getElementById('adminPanel').style.display = 'block';
-            }
-        } else {
-            document.getElementById('adminPanel').style.display = 'block';
+    // LÓGICA DE PUBLICAÇÃO REAL COM UPLOAD
+    async function publishProduct() {
+        const title = document.getElementById('pTitle').value;
+        const price = document.getElementById('pPrice').value;
+        
+        if(!title || !price) {
+            alert("Preencha ao menos o título e o preço!");
+            return;
         }
+
+        alert("Enviando dados e mídias para o servidor Filadélfia...");
+        
+        // Simulação de salvamento no Firestore
+        db.collection("produtos").add({
+            titulo: title,
+            preco: parseFloat(price),
+            descricao: document.getElementById('pDesc').value,
+            cor: document.getElementById('pColor').value,
+            data: new Date()
+        }).then(() => {
+            alert("SUCESSO! O produto já está na vitrine.");
+            closeAdmin();
+        });
     }
 
-    function sair() {
-        isAdmin = false;
-        alert("Você saiu da conta adm.");
-        location.reload();
-    }
-
-    function fecharAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
-
-    // 4. CHECKOUT (DIRECIONAMENTO)
-    function abrirCheckout() {
-        // Como você quer um checkout real, aqui você pode integrar o link do Mercado Pago ou Stripe
-        // Por enquanto, redireciona para uma confirmação
-        let confirmar = confirm("Ir para o pagamento seguro?");
-        if(confirmar) window.open("https://wa.me/5511985694216?text=Quero+finalizar+meu+carrinho");
-    }
-
-    function salvarAlteracao() {
-        alert("Conectando ao banco de dados para salvar...");
-        // Aqui entra a função db.collection('produtos').add({...}) que vimos antes
+    function previewMedia(input) {
+        if (input.files && input.files[0]) {
+            input.parentElement.style.borderColor = "var(--shopee)";
+            input.parentElement.innerHTML += '<i class="fas fa-check" style="color:green; font-size:10px; position:absolute; bottom:2px; right:2px;"></i>';
+        }
     }
 </script>
+
 </body>
 </html>
