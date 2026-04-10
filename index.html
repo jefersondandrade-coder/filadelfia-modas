@@ -1,354 +1,992 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Filadélfia Modas Mundial</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filadélfia Modas Mundial | Loja Oficial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #ee4d2d; --secondary: #ff6b35; --bg: #f5f5f5; --white: #fff; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); padding-bottom: 80px; }
 
-<style>
-:root{
---primary:#ee4d2d;
---bg:#f5f5f5;
---white:#fff;
---border:#e8e8e8;
-}
+        /* HEADER */
+        header { background: linear-gradient(135deg, #f53d2d, #ff6b35); padding: 15px; position: sticky; top:0; z-index:1000; }
+        .header-top { display:flex; align-items:center; gap:15px; max-width:1200px; margin:0 auto; }
+        .logo { color:white; font-size:24px; font-weight:bold; white-space:nowrap; }
+        .search-box { flex:1; background:white; border-radius:4px; padding:10px; display:flex; align-items:center; }
+        .search-box input { border:none; outline:none; width:100%; font-size:14px; }
+        .header-icons { color:white; display:flex; gap:20px; font-size:20px; }
+        .header-icons i { cursor:pointer; position:relative; }
+        .badge { position:absolute; top:-8px; right:-8px; background:#ffeb3b; color:#333; font-size:10px; padding:2px 6px; border-radius:10px; font-weight:bold; }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{background:var(--bg)}
+        /* CATEGORIAS */
+        .categorias { background:white; padding:15px; overflow-x:auto; }
+        .cat-grid { display:flex; gap:15px; max-width:1200px; margin:0 auto; }
+        .cat-item { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; min-width:60px; }
+        .cat-icon { width:50px; height:50px; background:#fff5f2; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--primary); }
+        .cat-item span { font-size:12px; color:#666; }
 
-/* HEADER */
-header{
-background:var(--primary);
-padding:15px;
-color:#fff;
-}
+        /* BANNER PRINCIPAL */
+        .banner-principal { width:100%; height:250px; background:#ddd; overflow:hidden; margin:20px 0; }
+        .banner-principal img { width:100%; height:100%; object-fit:cover; }
 
-.header-main{
-display:flex;
-flex-wrap:wrap;
-align-items:center;
-gap:10px;
-}
+        /* DEPOIMENTOS */
+        .depo-section { padding:20px 15px; background:white; margin:20px 0; }
+        .depo-title { font-size:16px; font-weight:bold; margin-bottom:15px; color:#333; }
+        .depo-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+        .depo-item { aspect-ratio:1; background:#f5f5f5; border-radius:8px; overflow:hidden; }
+        .depo-item img { width:100%; height:100%; object-fit:cover; }
 
-.logo{
-font-weight:bold;
-font-size:1.4em;
-white-space:nowrap;
-}
+        /* AFILIADO BANNER */
+        .afiliado-banner { background:#222; color:white; padding:30px 15px; text-align:center; margin:20px 0; }
+        .afiliado-banner h3 { margin-bottom:10px; font-size:18px; }
+        .afiliado-banner p { font-size:14px; margin-bottom:15px; color:#ccc; }
+        .btn-afiliado { background:#ffeb3b; color:#333; padding:12px 30px; border:none; border-radius:4px; font-weight:bold; cursor:pointer; font-size:14px; }
 
-.search-box{
-flex:1;
-}
+        /* PRODUTOS */
+        .section-title { padding:20px 15px 10px; font-size:18px; font-weight:bold; color:#333; display:flex; align-items:center; gap:8px; }
+        .section-title i { color:var(--primary); }
+        .product-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px 20px; }
+        .product-card { background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); position:relative; }
+        .p-media { aspect-ratio:1; background:#f9f9f9; position:relative; overflow:hidden; }
+        .p-media img, .p-media video { width:100%; height:100%; object-fit:cover; }
+        .p-badge { position:absolute; top:8px; left:8px; background:var(--primary); color:white; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold; }
+        .p-info { padding:12px; }
+        .p-name { font-size:14px; font-weight:600; margin-bottom:5px; color:#333; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .p-price { color:var(--primary); font-weight:bold; font-size:18px; margin:8px 0; }
+        .p-btn { width:100%; background:var(--primary); color:white; border:none; padding:10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:13px; }
 
-.search-box input{
-width:100%;
-padding:10px;
-border:none;
-border-radius:4px;
-}
+        /* FOOTER */
+        footer { background:white; padding:40px 15px 100px; margin-top:40px; border-top:4px solid var(--primary); }
+        .footer-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:30px; max-width:1200px; margin:0 auto; }
+        .footer-col h3 { margin-bottom:15px; color:#333; font-size:16px; }
+        .footer-col p, .footer-col a { color:#666; font-size:14px; margin-bottom:8px; display:block; text-decoration:none; line-height:1.6; }
+        .footer-bottom { text-align:center; margin-top:30px; padding-top:20px; border-top:1px solid #eee; color:#999; font-size:13px; max-width:1200px; margin-left:auto; margin-right:auto; }
 
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-gap:15px;
-padding:20px;
-}
+        /* BOTTOM NAV */
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; display:flex; justify-content:space-around; padding:10px 0; box-shadow:0 -2px 10px rgba(0,0,0,0.1); z-index:100; }
+        .bottom-nav a { display:flex; flex-direction:column; align-items:center; font-size:11px; color:#666; text-decoration:none; gap:3px; }
+        .bottom-nav a.active { color:var(--primary); }
+        .bottom-nav i { font-size:20px; }
 
-.card{
-background:#fff;
-border-radius:6px;
-overflow:hidden;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
+        /* MODAIS */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center; }
+        .modal.active { display:flex; }
+        .modal-content { background:white; width:90%; max-width:600px; border-radius:12px; max-height:90vh; overflow-y:auto; animation:slideUp 0.3s; }
+        @keyframes slideUp { from { transform:translateY(50px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        .modal-header { padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:white; z-index:10; }
+        .modal-body { padding:20px; }
+        .close-btn { background:none; border:none; font-size:24px; cursor:pointer; color:#999; }
 
-.card img{
-width:100%;
-height:180px;
-object-fit:cover;
-}
+        /* ADMIN PANEL */
+        #adminPanel { position:fixed; top:0; right:-100%; width:100%; max-width:500px; height:100%; background:white; z-index:3000; transition:0.3s; overflow-y:auto; box-shadow:-2px 0 10px rgba(0,0,0,0.3); }
+        #adminPanel.active { right:0; }
+        .admin-header { background:#222; color:white; padding:20px; display:flex; justify-content:space-between; align-items:center; }
+        .admin-tabs { display:flex; background:#f5f5f5; border-bottom:2px solid #eee; }
+        .admin-tab { flex:1; padding:15px; text-align:center; cursor:pointer; font-weight:600; color:#666; border-bottom:3px solid transparent; }
+        .admin-tab.active { color:var(--primary); border-bottom-color:var(--primary); background:white; }
+        .admin-body { padding:20px; }
 
-.card-info{
-padding:10px;
-}
+        /* UPLOAD GRID PROFISSIONAL */
+        .upload-section { margin:20px 0; }
+        .upload-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin:15px 0; }
+        .upload-slot { aspect-ratio:1; border:2px dashed #ccc; border-radius:8px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; background:#fdfdfd; cursor:pointer; transition:0.2s; }
+        .upload-slot:hover { border-color:var(--primary); background:#fff5f2; }
+        .upload-slot.filled { border-style:solid; border-color:var(--primary); }
+        .upload-slot img, .upload-slot video { width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; }
+        .upload-slot input { position:absolute; width:100%; height:100%; opacity:0; cursor:pointer; z-index:10; }
+        .upload-slot i { color:#999; font-size:28px; pointer-events:none; }
+        .upload-slot .remove-btn { position:absolute; top:5px; right:5px; background:rgba(238,77,45,0.95); color:white; width:26px; height:26px; border-radius:50%; display:none; align-items:center; justify-content:center; cursor:pointer; z-index:20; font-size:14px; }
+        .upload-slot.filled .remove-btn { display:flex; }
+        .upload-slot .capa-badge { position:absolute; bottom:5px; left:5px; background:var(--primary); color:white; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; display:none; }
+        .upload-slot.is-capa .capa-badge { display:block; }
+        .upload-slot .set-capa { position:absolute; top:5px; left:5px; background:rgba(0,0,0,0.7); color:white; padding:3px 8px; border-radius:4px; font-size:10px; cursor:pointer; display:none; z-index:15; }
+        .upload-slot.filled .set-capa { display:block; }
+        .video-slot { grid-column:span 3; border-color:var(--primary); }
+        .video-slot i { color:var(--primary); }
 
-.price{
-color:var(--primary);
-font-weight:bold;
-}
+        /* FORMS */
+        .form-group { margin-bottom:15px; }
+        .form-group label { display:block; font-weight:600; margin-bottom:5px; font-size:13px; color:#333; }
+        .form-group input, .form-group textarea, .form-group select { width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:14px; }
+        .form-row { display:flex; gap:10px; }
+        .form-row .form-group { flex:1; }
+        .checkbox-group { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+        .checkbox-item { display:flex; align-items:center; gap:5px; font-size:13px; }
+        .checkbox-item input { width:auto; }
 
-.btn{
-background:var(--primary);
-color:#fff;
-border:none;
-padding:8px;
-width:100%;
-cursor:pointer;
-margin-top:5px;
-}
+        .btn-save { width:100%; background:var(--primary); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; font-size:16px; cursor:pointer; margin-top:20px; }
+        .btn-save:active { background:#d63214; }
 
-/* ADMIN */
-#adminPanel{
-display:none;
-background:#fff;
-padding:20px;
-margin:20px;
-border-radius:6px;
-}
+        /* CARRINHO */
+        .cart-item { display:flex; gap:15px; padding:15px 0; border-bottom:1px solid #eee; }
+        .cart-item img { width:80px; height:80px; object-fit:cover; border-radius:6px; }
+        .cart-item-info { flex:1; }
+        .cart-item-name { font-weight:600; margin-bottom:5px; }
+        .cart-item-price { color:var(--primary); font-weight:bold; }
+        .cart-item-qty { display:flex; align-items:center; gap:10px; margin-top:8px; }
+        .qty-btn { width:28px; height:28px; border:1px solid #ddd; background:white; cursor:pointer; border-radius:4px; }
+        .cart-total { font-size:20px; font-weight:bold; text-align:right; margin:20px 0; color:var(--primary); }
 
-.media-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-}
+        .loading { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:none; align-items:center; justify-content:center; color:white; flex-direction:column; gap:15px; }
+        .loading.active { display:flex; }
+        .loading i { font-size:40px; }
 
-.media-box{
-border:2px dashed var(--primary);
-height:80px;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-position:relative;
-}
-
-.media-box img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-/* LOGIN */
-#loginModal{
-display:none;
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:#fff;
-padding:20px;
-border-radius:8px;
-z-index:1000;
-}
-
-/* ESTOQUE */
-.low{color:#fa8c16;font-weight:bold}
-.ok{color:#52c41a;font-weight:bold}
-
-</style>
-
+        .notification { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#333; color:white; padding:12px 24px; border-radius:6px; z-index:5000; display:none; font-size:14px; }
+        .notification.show { display:block; animation:fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity:0; transform:translateX(-50%) translateY(-20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+    </style>
 </head>
-
 <body>
 
+<!-- HEADER -->
 <header>
-<div class="header-main">
-<div class="logo">FILADÉLPHIA</div>
-
-<div class="search-box">
-<input placeholder="Buscar produtos...">
-</div>
-
-<div onclick="openLogin()">👤</div>
-</div>
+    <div class="header-top">
+        <div class="logo">FILADÉLPHIA</div>
+        <div class="search-box">
+            <i class="fas fa-search" style="color:#999; margin-right:10px;"></i>
+            <input type="text" placeholder="Buscar na Filadélfia Modas..." id="searchInput">
+        </div>
+        <div class="header-icons">
+            <i class="far fa-heart" onclick="showNotification('Em breve!')"></i>
+            <i class="fas fa-shopping-cart" onclick="openCart()">
+                <span class="badge" id="cartCount">0</span>
+            </i>
+            <i class="far fa-user" id="userIcon" onclick="openLogin()"></i>
+            <div class="user-avatar" id="userAvatar" style="display:none;width:32px;height:32px;background:white;border-radius:50%;align-items:center;justify-content:center;color:var(--primary);font-weight:bold;cursor:pointer;" onclick="toggleUserMenu()">A</div>
+        </div>
+    </div>
 </header>
 
+<!-- CATEGORIAS -->
+<div class="categorias">
+    <div class="cat-grid">
+        <div class="cat-item" onclick="filterProducts('ofertas')"><div class="cat-icon"><i class="fas fa-bolt"></i></div><span>Ofertas</span></div>
+        <div class="cat-item" onclick="filterProducts('feminino')"><div class="cat-icon"><i class="fas fa-female"></i></div><span>Feminino</span></div>
+        <div class="cat-item" onclick="filterProducts('masculino')"><div class="cat-icon"><i class="fas fa-male"></i></div><span>Masculino</span></div>
+        <div class="cat-item" onclick="filterProducts('novidades')"><div class="cat-icon"><i class="fas fa-star"></i></div><span>Novidades</span></div>
+        <div class="cat-item" onclick="filterProducts('envios')"><div class="cat-icon"><i class="fas fa-truck"></i></div><span>Envios</span></div>
+    </div>
+</div>
+
+<!-- BANNER PRINCIPAL -->
+<div class="banner-principal">
+    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800" id="mainBanner" alt="Banner">
+</div>
+
+<!-- DEPOIMENTOS -->
+<div class="depo-section">
+    <div class="depo-title">🔥 QUEM JÁ RECEBEU (Depoimentos)</div>
+    <div class="depo-grid" id="depoGrid">
+        <div class="depo-item"><img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=300" alt="Depoimento"></div>
+        <div class="depo-item"><img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=300" alt="Depoimento"></div>
+        <div class="depo-item"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300" alt="Depoimento"></div>
+    </div>
+</div>
+
+<!-- ÁREA DO AFILIADO -->
+<div class="afiliado-banner">
+    <h3>TRABALHE CONOSCO</h3>
+    <p>Ganhe comissões reais vendendo nossos produtos</p>
+    <button class="btn-afiliado" onclick="openAffiliate()">ÁREA DO AFILIADO</button>
+</div>
+
 <!-- PRODUTOS -->
+<div class="section-title"><i class="fas fa-fire"></i> MAIS VENDIDOS</div>
+<div class="product-grid" id="productGrid">
+    <div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Carregando produtos...</div>
+</div>
 
-<div class="grid" id="products"></div>
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h3>FILADÉLPHIA MODAS MUNDIAL</h3>
+            <p>Sua loja de moda completa com as melhores tendências nacionais e internacionais. Qualidade, preço justo e atendimento excepcional desde 2016.</p>
+        </div>
+        <div class="footer-col">
+            <h3>LINKS RÁPIDOS</h3>
+            <a href="#">Sobre Nós</a>
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Termos de Uso</a>
+            <a href="#">Trocas e Devoluções</a>
+            <a href="#">Perguntas Frequentes</a>
+        </div>
+        <div class="footer-col">
+            <h3>ATENDIMENTO</h3>
+            <a href="https://wa.me/5511985694216"><i class="fab fa-whatsapp"></i> (11) 98569-4216</a>
+            <a href="mailto:contato@filadelphiamodas.com.br"><i class="fas fa-envelope"></i> contato@filadelphiamodas.com.br</a>
+            <p><i class="fas fa-clock"></i> Seg a Sex: 9h às 18h</p>
+            <p><i class="fas fa-map-marker-alt"></i> Atendimento Online</p>
+        </div>
+        <div class="footer-col">
+            <h3>FORMAS DE PAGAMENTO</h3>
+            <p>Aceitamos todas as principais formas de pagamento</p>
+            <div style="font-size:2em; margin-top:10px; color:#666;">
+                <i class="fab fa-cc-visa" style="margin-right:10px;"></i>
+                <i class="fab fa-cc-mastercard" style="margin-right:10px;"></i>
+                <i class="fas fa-barcode" style="margin-right:10px;"></i>
+                <i class="fas fa-qrcode"></i>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2016-2026 Filadélfia Modas Mundial. Todos os direitos reservados.</p>
+        <p>CNPJ: 37.032.413/0001-68 | Atendimento Online</p>
+        <p style="margin-top:10px;"><i class="fas fa-undo"></i> Trocas: Conforme Art. 49 do CDC, você tem até 7 dias após o recebimento para desistir da compra.</p>
+    </div>
+</footer>
 
-<!-- ADMIN -->
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+    <a href="#" class="active" onclick="showHome()"><i class="fas fa-home"></i>Início</a>
+    <a href="#"><i class="fas fa-th-large"></i>Categorias</a>
+    <a href="#" onclick="openCart()"><i class="fas fa-shopping-cart"></i>Carrinho</a>
+    <a href="#" onclick="openLogin()"><i class="fas fa-user"></i>Conta</a>
+</div>
 
+<!-- LOADING -->
+<div class="loading" id="loadingOverlay">
+    <i class="fas fa-spinner fa-spin"></i>
+    <div id="loadingText">Processando...</div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<!-- MODAL LOGIN -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Login / Cadastro</h3>
+            <button class="close-btn" onclick="closeLogin()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="btn-save" style="flex:1; margin:0;" onclick="switchLoginTab('login')" id="tabLogin">Entrar</button>
+                <button class="btn-save" style="flex:1; margin:0; background:#999;" onclick="switchLoginTab('register')" id="tabRegister">Cadastrar</button>
+            </div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group"><label>E-mail</label><input type="email" id="loginEmail" required placeholder="seu@email.com"></div>
+                <div class="form-group"><label>Senha</label><input type="password" id="loginPass" required placeholder="********"></div>
+                <button type="submit" class="btn-save">ENTRAR</button>
+            </form>
+
+            <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+                <div class="form-group"><label>Nome Completo</label><input type="text" id="regName" required></div>
+                <div class="form-group"><label>E-mail</label><input type="email" id="regEmail" required></div>
+                <div class="form-group"><label>WhatsApp</label><input type="tel" id="regPhone" required placeholder="(11) 99999-9999"></div>
+                <div class="form-group"><label>Senha (mín. 6 caracteres)</label><input type="password" id="regPass" required minlength="6"></div>
+                <button type="submit" class="btn-save">CRIAR CONTA</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CARRINHO -->
+<div class="modal" id="cartModal">
+    <div class="modal-content" style="max-width:500px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-shopping-cart"></i> Seu Carrinho (<span id="cartItemCount">0</span>)</h3>
+            <button class="close-btn" onclick="closeCart()">&times;</button>
+        </div>
+        <div class="modal-body" id="cartItems">
+            <p style="text-align:center; color:#999; padding:40px 0;">Seu carrinho está vazio.</p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AFILIADO -->
+<div class="modal" id="affiliateModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-handshake"></i> Seja um Afiliado</h3>
+            <button class="close-btn" onclick="closeAffiliate()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:20px; color:#666;">Preencha os dados abaixo para se tornar um afiliado Filadélfia Modas:</p>
+            <form onsubmit="handleAffiliateRegister(event)">
+                <div class="form-row">
+                    <div class="form-group"><label>Nome Completo *</label><input type="text" required></div>
+                    <div class="form-group"><label>CPF *</label><input type="text" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>E-mail *</label><input type="email" required></div>
+                    <div class="form-group"><label>WhatsApp *</label><input type="tel" required placeholder="(11) 99999-9999"></div>
+                </div>
+                <div class="form-group"><label>Instagram</label><input type="text" placeholder="@seuinstagram"></div>
+                <div class="form-group">
+                    <label>Como pretende divulgar? *</label>
+                    <select required>
+                        <option value="">Selecione...</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="blog">Blog/Site</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-save">ENVIAR CADASTRO</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- PAINEL ADMIN -->
 <div id="adminPanel">
+    <div class="admin-header">
+        <h3>🔧 GERENCIAR LOJA</h3>
+        <i class="fas fa-times" onclick="closeAdmin()" style="font-size:24px; cursor:pointer;"></i>
+    </div>
+    <div class="admin-tabs">
+        <div class="admin-tab active" onclick="switchAdminTab('add')">➕ Produto</div>
+        <div class="admin-tab" onclick="switchAdminTab('list')">📋 Pedidos</div>
+        <div class="admin-tab" onclick="switchAdminTab('affiliates')">🤝 Afiliados</div>
+    </div>
+    
+    <!-- ABA: ADICIONAR PRODUTO -->
+    <div id="tabAddContent" class="admin-body">
+        <div class="form-group">
+            <label>Título do Produto *</label>
+            <input type="text" id="prodName" placeholder="Ex: Conjunto Amarelo Verão">
+        </div>
 
-<h2>Adicionar Produto</h2>
+        <div class="upload-section">
+            <label style="font-weight:600; font-size:13px; display:block; margin-bottom:10px;">
+                📸 Fotos do Produto (clique para adicionar) - Escolha a capa
+            </label>
+            <div class="upload-grid" id="mediaGrid"></div>
+            <div style="font-size:12px; color:#666; margin-top:5px;">
+                * Até 8 imagens (JPG/PNG) + 1 vídeo • Clique em "CAPA" para definir a principal
+            </div>
+        </div>
 
-<input id="name" placeholder="Nome"><br><br> <input id="price" placeholder="Preço"><br><br> <input id="stock" placeholder="Estoque"><br><br>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Preço (R$) *</label>
+                <input type="number" id="prodPrice" placeholder="90.90" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Preço Promocional (R$)</label>
+                <input type="number" id="prodOldPrice" placeholder="120.00" step="0.01">
+            </div>
+        </div>
 
-<div class="media-grid" id="media"></div><br>
+        <div class="form-group">
+            <label>Categoria *</label>
+            <select id="prodCategory">
+                <option value="">Selecione...</option>
+                <option value="feminino">Moda Feminina</option>
+                <option value="masculino">Moda Masculina</option>
+                <option value="acessorios">Acessórios</option>
+                <option value="lancamentos">Lançamentos</option>
+                <option value="ofertas">Ofertas</option>
+            </select>
+        </div>
 
-<button class="btn" onclick="save()">Publicar</button>
+        <div class="form-group">
+            <label>Cor Principal</label>
+            <input type="text" id="prodColor" placeholder="Ex: Amarelo, Azul, Vermelho...">
+        </div>
 
-<hr><br>
+        <div class="form-group">
+            <label>Tamanhos Disponíveis *</label>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" value="PP"> PP</label>
+                <label class="checkbox-item"><input type="checkbox" value="P"> P</label>
+                <label class="checkbox-item"><input type="checkbox" value="M"> M</label>
+                <label class="checkbox-item"><input type="checkbox" value="G"> G</label>
+                <label class="checkbox-item"><input type="checkbox" value="GG"> GG</label>
+                <label class="checkbox-item"><input type="checkbox" value="G1"> G1</label>
+                <label class="checkbox-item"><input type="checkbox" value="G2"> G2</label>
+                <label class="checkbox-item"><input type="checkbox" value="G3"> G3</label>
+                <label class="checkbox-item"><input type="checkbox" value="G4"> G4</label>
+            </div>
+            <div style="margin-top:10px; font-size:12px; color:#666;">Ou numeração: 34, 36, 38, 40, 42, 44, 46, 48, 50, 52</div>
+            <input type="text" id="prodSizes" placeholder="Ex: 34, 36, 38, 40" style="margin-top:8px;">
+        </div>
 
-<h2>Produtos</h2>
-<div id="adminList"></div>
+        <div class="form-group">
+            <label>Descrição Completa</label>
+            <textarea id="prodDesc" rows="4" placeholder="Tecido, cuidados, detalhes do produto..."></textarea>
+        </div>
 
+        <div class="form-row">
+            <div class="form-group">
+                <label>Estoque</label>
+                <input type="number" id="prodStock" placeholder="100">
+            </div>
+            <div class="form-group">
+                <label>Peso (kg)</label>
+                <input type="number" id="prodWeight" placeholder="0.5" step="0.01">
+            </div>
+        </div>
+
+        <button class="btn-save" onclick="saveProduct()">
+            <i class="fas fa-save"></i> PUBLICAR PRODUTO
+        </button>
+    </div>
+
+    <!-- ABA: PEDIDOS -->
+    <div id="tabListContent" class="admin-body" style="display:none;">
+        <h3 style="margin-bottom:20px;">📦 Pedidos Recebidos</h3>
+        <div id="ordersList">
+            <p style="text-align:center; color:#999; padding:40px;">Carregando pedidos...</p>
+        </div>
+    </div>
+
+    <!-- ABA: AFILIADOS -->
+    <div id="tabAffiliatesContent" class="admin-body" style="display:none;">
+        <h3 style="margin-bottom:20px;">🤝 Cadastros de Afiliados</h3>
+        <div id="affiliatesList">
+            <p style="text-align:center; color:#999; padding:40px;">Carregando...</p>
+        </div>
+    </div>
 </div>
 
-<!-- LOGIN -->
+<script>
+    // FIREBASE CONFIG
+    const firebaseConfig = {
+        apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
+        authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
+        projectId: "loja-filadelphia-modas-mundial",
+        storageBucket: "loja-filadelphia-modas-mundial.firebasestorage.app",
+        messagingSenderId: "515015337156",
+        appId: "1:515015337156:web:79f689c6849285aa13d591"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    const auth = firebase.auth();
 
-<div id="loginModal">
-<h3>Login</h3><br>
-<input id="email" placeholder="Email"><br><br>
-<input id="pass" type="password" placeholder="Senha"><br><br>
+    // GLOBALS
+    window.cart = [];
+    window.currentUser = null;
+    window.uploadedMedia = [];
+    window.coverIndex = 0;
 
-<button class="btn" onclick="login()">Entrar</button> <button class="btn" onclick="register()">Criar Conta</button>
+    // INIT
+    document.addEventListener('DOMContentLoaded', () => {
+        initUploadGrid();
+        loadProducts();
+        
+        auth.onAuthStateChanged(user => {
+            window.currentUser = user;
+            if(user) {
+                document.getElementById('userIcon').style.display = 'none';
+                document.getElementById('userAvatar').style.display = 'flex';
+                document.getElementById('userAvatar').textContent = user.email.charAt(0).toUpperCase();
+                if(user.email === 'admin@filadelphiamodas.com.br') {
+                    // Admin logado
+                }
+            } else {
+                document.getElementById('userIcon').style.display = 'block';
+                document.getElementById('userAvatar').style.display = 'none';
+            }
+        });
+    });
 
-</div>
+    // UPLOAD GRID
+    function initUploadGrid() {
+        const grid = document.getElementById('mediaGrid');
+        grid.innerHTML = '';
+        window.uploadedMedia = [];
+        window.coverIndex = 0;
+        
+        for(let i=0; i<8; i++) {
+            const slot = createUploadSlot(i, false);
+            grid.appendChild(slot);
+        }
+        
+        const videoSlot = createUploadSlot(8, true);
+        grid.appendChild(videoSlot);
+    }
 
-<script type="module">
+    function createUploadSlot(index, isVideo) {
+        const slot = document.createElement('div');
+        slot.className = 'upload-slot';
+        slot.innerHTML = `
+            <i class="fas ${isVideo ? 'fa-video' : 'fa-camera'}"></i>
+            <span style="position:absolute; bottom:5px; font-size:11px; color:${isVideo ? 'var(--primary)' : '#999'};">
+                ${isVideo ? 'Vídeo' : 'Foto ' + (index+1)}
+            </span>
+            <div class="remove-btn" onclick="removeMedia(${index}, event)">×</div>
+            <div class="set-capa" onclick="setAsCover(${index}, event)" style="${index===0 && !isVideo ? 'display:block;' : ''}">CAPA</div>
+            <div class="capa-badge" style="${index===0 && !isVideo ? 'display:block;' : ''}">CAPA</div>
+            <input type="file" accept="${isVideo ? 'video/*' : 'image/*'}" onchange="handleMediaUpload(this, ${index}, ${isVideo})">
+        `;
+        return slot;
+    }
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-getAuth,
-signInWithEmailAndPassword,
-createUserWithEmailAndPassword,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    function handleMediaUpload(input, index, isVideo) {
+        if(input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            const slot = input.parentElement;
+            
+            reader.onload = function(e) {
+                window.uploadedMedia[index] = { type: isVideo ? 'video' : 'image', data: e.target.result, file: file };
+                slot.classList.add('filled');
+                
+                const oldMedia = slot.querySelector('img, video');
+                if(oldMedia) oldMedia.remove();
+                
+                if(isVideo) {
+                    const video = document.createElement('video');
+                    video.src = e.target.result;
+                    video.muted = true;
+                    video.playsInline = true;
+                    slot.appendChild(video);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    slot.appendChild(img);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
 
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-deleteDoc,
-doc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    function removeMedia(index, event) {
+        event.stopPropagation();
+        window.uploadedMedia[index] = null;
+        const slots = document.querySelectorAll('.upload-slot');
+        const slot = slots[index];
+        slot.classList.remove('filled', 'is-capa');
+        const media = slot.querySelector('img, video');
+        if(media) media.remove();
+        input.value = '';
+    }
 
-/* FIREBASE */
-const firebaseConfig = {
-apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
-authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
-projectId: "loja-filadelphia-modas-mundial",
-storageBucket: "loja-filadelphia-modas-mundial.firebasestorage.app",
-messagingSenderId: "515015337156",
-appId: "1:515015337156:web:79f689c6849285aa13d591"
-};
+    function setAsCover(index, event) {
+        event.stopPropagation();
+        if(window.uploadedMedia[index] && window.uploadedMedia[index].type === 'image') {
+            window.coverIndex = index;
+            document.querySelectorAll('.upload-slot').forEach((slot, i) => {
+                slot.classList.remove('is-capa');
+                if(i === index) slot.classList.add('is-capa');
+            });
+            showNotification('Imagem definida como capa!');
+        }
+    }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    // ADMIN
+    function openAdmin() {
+        const senha = prompt("🔐 Senha Admin:");
+        if(senha === "123" || senha === "admin") {
+            document.getElementById('adminPanel').classList.add('active');
+            initUploadGrid();
+        } else if(senha !== null) {
+            alert("Senha incorreta!");
+        }
+    }
+    function closeAdmin() { document.getElementById('adminPanel').classList.remove('active'); }
+    function switchAdminTab(tab) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tabAddContent').style.display = 'none';
+        document.getElementById('tabListContent').style.display = 'none';
+        document.getElementById('tabAffiliatesContent').style.display = 'none';
+        
+        if(tab === 'add') {
+            document.getElementById('tabAddContent').style.display = 'block';
+            document.querySelectorAll('.admin-tab')[0].classList.add('active');
+        } else if(tab === 'list') {
+            document.getElementById('tabListContent').style.display = 'block';
+            document.querySelectorAll('.admin-tab')[1].classList.add('active');
+            loadOrders();
+        } else if(tab === 'affiliates') {
+            document.getElementById('tabAffiliatesContent').style.display = 'block';
+            document.querySelectorAll('.admin-tab')[2].classList.add('active');
+            loadAffiliates();
+        }
+    }
 
-let imgs=[];
+    // SAVE PRODUCT
+    async function saveProduct() {
+        const name = document.getElementById('prodName').value.trim();
+        const price = document.getElementById('prodPrice').value;
+        const category = document.getElementById('prodCategory').value;
+        
+        if(!name || !price || !category) {
+            showNotification('Preencha título, preço e categoria!');
+            return;
+        }
+        
+        const validImages = window.uploadedMedia.filter((m, i) => m && m.type === 'image');
+        if(validImages.length === 0) {
+            showNotification('Adicione pelo menos 1 foto!');
+            return;
+        }
+        
+        document.getElementById('loadingOverlay').classList.add('active');
+        document.getElementById('loadingText').textContent = 'Salvando produto...';
+        
+        try {
+            const productData = {
+                name: name,
+                price: parseFloat(price),
+                oldPrice: parseFloat(document.getElementById('prodOldPrice').value) || 0,
+                category: category,
+                color: document.getElementById('prodColor').value,
+                sizes: document.getElementById('prodSizes').value,
+                description: document.getElementById('prodDesc').value,
+                stock: parseInt(document.getElementById('prodStock').value) || 0,
+                weight: parseFloat(document.getElementById('prodWeight').value) || 0,
+                images: [],
+                video: null,
+                coverIndex: window.coverIndex,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                active: true
+            };
+            
+            // Upload images
+            for(let i=0; i<window.uploadedMedia.length; i++) {
+                const media = window.uploadedMedia[i];
+                if(media && media.type === 'image') {
+                    const response = await fetch(media.data);
+                    const blob = await response.blob();
+                    const filename = `products/${Date.now()}_${i}.jpg`;
+                    const uploadTask = await storage.ref(filename).put(blob);
+                    const url = await uploadTask.ref.getDownloadURL();
+                    productData.images.push(url);
+                } else if(media && media.type === 'video') {
+                    const response = await fetch(media.data);
+                    const blob = await response.blob();
+                    const filename = `products/video_${Date.now()}.mp4`;
+                    const uploadTask = await storage.ref(filename).put(blob);
+                    productData.video = await uploadTask.ref.getDownloadURL();
+                }
+            }
+            
+            await db.collection('products').add(productData);
+            showNotification('✅ Produto publicado!');
+            
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodOldPrice').value = '';
+            document.getElementById('prodCategory').value = '';
+            document.getElementById('prodColor').value = '';
+            document.getElementById('prodSizes').value = '';
+            document.getElementById('prodDesc').value = '';
+            document.getElementById('prodStock').value = '';
+            document.getElementById('prodWeight').value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            initUploadGrid();
+            closeAdmin();
+            loadProducts();
+            
+        } catch(err) {
+            console.error(err);
+            showNotification('❌ Erro: ' + err.message);
+        } finally {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+    }
 
-/* LOGIN */
-window.login=()=>signInWithEmailAndPassword(auth,email.value,pass.value);
-window.register=()=>createUserWithEmailAndPassword(auth,email.value,pass.value);
+    // LOAD PRODUCTS
+    async function loadProducts(category = 'all') {
+        const grid = document.getElementById('productGrid');
+        try {
+            let q = db.collection('products').where('active', '==', true).orderBy('createdAt', 'desc');
+            if(category !== 'all') q = q.where('category', '==', category);
+            
+            const snapshot = await q.get();
+            if(snapshot.empty) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Nenhum produto.</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                const coverImage = p.images[p.coverIndex] || p.images[0] || 'https://via.placeholder.com/300';
+                const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+                
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    ${discount > 0 ? `<div class="p-badge">-${discount}%</div>` : ''}
+                    <div class="p-media">
+                        <img src="${coverImage}" alt="${p.name}">
+                        ${p.video ? '<i class="fas fa-play-circle" style="position:absolute; bottom:10px; right:10px; color:white; font-size:30px; text-shadow:0 2px 4px rgba(0,0,0,0.5);"></i>' : ''}
+                    </div>
+                    <div class="p-info">
+                        <div class="p-name">${p.name}</div>
+                        ${p.color ? `<div style="font-size:12px; color:#666; margin-bottom:5px;"><i class="fas fa-palette"></i> ${p.color}</div>` : ''}
+                        <div class="p-price">R$ ${p.price.toFixed(2).replace('.', ',')}</div>
+                        ${p.oldPrice ? `<div style="font-size:13px; color:#999; text-decoration:line-through; margin-bottom:8px;">R$ ${p.oldPrice.toFixed(2).replace('.', ',')}</div>` : ''}
+                        <button class="p-btn" onclick="addToCart('${doc.id}', '${p.name}', ${p.price}, '${coverImage}')">
+                            <i class="fas fa-shopping-cart"></i> COMPRAR NO PIX
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        } catch(err) {
+            console.error(err);
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Erro ao carregar.</div>';
+        }
+    }
 
-/* AUTH */
-onAuthStateChanged(auth,user=>{
-if(user && user.email==="admin@filadelphiamodas.com.br"){
-adminPanel.style.display="block";
-}
-});
+    // CART
+    function addToCart(id, name, price, image) {
+        const existing = window.cart.find(item => item.id === id);
+        if(existing) {
+            existing.qty++;
+        } else {
+            window.cart.push({ id, name, price, image, qty: 1 });
+        }
+        updateCartCount();
+        showNotification('Adicionado ao carrinho!');
+    }
 
-/* UPLOAD */
-function render(){
-let html="";
-for(let i=0;i<4;i++){
-html+=`<div class="media-box" onclick="up(${i})">+</div>`;
-}
-media.innerHTML=html;
-}
-render();
+    function updateCartCount() {
+        const count = window.cart.reduce((sum, item) => sum + item.qty, 0);
+        document.getElementById('cartCount').textContent = count;
+        document.getElementById('cartItemCount').textContent = count;
+    }
 
-window.up=i=>{
-let input=document.createElement("input");
-input.type="file";
+    function openCart() {
+        const modal = document.getElementById('cartModal');
+        const container = document.getElementById('cartItems');
+        
+        if(window.cart.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#999; padding:40px 0;">Seu carrinho está vazio.</p>';
+        } else {
+            let html = '';
+            let total = 0;
+            window.cart.forEach((item, index) => {
+                total += item.price * item.qty;
+                html += `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+                            <div class="cart-item-qty">
+                                <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                                <button onclick="removeFromCart(${index})" style="margin-left:auto; background:none; border:none; color:#f44; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `<div class="cart-total">Total: R$ ${total.toFixed(2).replace('.', ',')}</div>`;
+            html += `<button class="btn-save" onclick="checkout()" style="margin-top:15px;"><i class="fab fa-whatsapp"></i> FINALIZAR PEDIDO</button>`;
+            container.innerHTML = html;
+        }
+        modal.classList.add('active');
+    }
 
-input.onchange=e=>{
-let r=new FileReader();
-r.onload=ev=>{
-imgs[i]=ev.target.result;
-renderPreview();
-};
-r.readAsDataURL(e.target.files[0]);
-};
+    function updateQty(index, change) {
+        window.cart[index].qty += change;
+        if(window.cart[index].qty <= 0) window.cart.splice(index, 1);
+        updateCartCount();
+        openCart();
+    }
 
-input.click();
-};
+    function removeFromCart(index) {
+        window.cart.splice(index, 1);
+        updateCartCount();
+        openCart();
+    }
 
-function renderPreview(){
-let html="";
-for(let i=0;i<4;i++){
-html+=`
-<div class="media-box" onclick="up(${i})">
-${imgs[i]?`<img src="${imgs[i]}">`:'+'}
-</div>`;
-}
-media.innerHTML=html;
-}
+    function closeCart() { document.getElementById('cartModal').classList.remove('active'); }
 
-/* SALVAR */
-window.save=async()=>{
-await addDoc(collection(db,"products"),{
-name:name.value,
-price:Number(price.value),
-stock:Number(stock.value),
-image:imgs[0]||"",
-affiliate:location.origin+"?ref=user"
-});
-load();
-loadAdmin();
-};
+    function checkout() {
+        if(window.cart.length === 0) {
+            showNotification('Carrinho vazio!');
+            return;
+        }
+        
+        const total = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const items = window.cart.map(item => `• ${item.name} x${item.qty} - R$ ${(item.price * item.qty).toFixed(2)}`).join('%0A');
+        
+        let msg = `🛍️ *NOVO PEDIDO - FILADÉLPHIA MODAS*%0A%0A`;
+        msg += `*Cliente:* ${window.currentUser?.email || 'Não cadastrado'}%0A`;
+        msg += `*WhatsApp:* ${window.currentUser?.phoneNumber || 'Não informado'}%0A%0A`;
+        msg += `*Itens:*%0A${items}%0A%0A`;
+        msg += `*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*%0A%0A`;
+        msg += `_Aguardo confirmação do PIX!_`;
+        
+        window.open(`https://wa.me/5511985694216?text=${msg}`, '_blank');
+        
+        // Save order to Firebase
+        saveOrder(total);
+    }
 
-/* LOJA */
-async function load(){
-const snap=await getDocs(collection(db,"products"));
-let html="";
+    async function saveOrder(total) {
+        try {
+            await db.collection('orders').add({
+                items: window.cart,
+                total: total,
+                customer: {
+                    email: window.currentUser?.email || 'Não cadastrado',
+                    phone: window.currentUser?.phoneNumber || 'Não informado'
+                },
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            window.cart = [];
+            updateCartCount();
+            closeCart();
+            showNotification('Pedido enviado! Entraremos em contato.');
+        } catch(err) {
+            console.error(err);
+        }
+    }
 
-snap.forEach(d=>{
-let p=d.data();
+    // AUTH
+    function openLogin() { document.getElementById('loginModal').classList.add('active'); }
+    function closeLogin() { document.getElementById('loginModal').classList.remove('active'); }
+    function switchLoginTab(tab) {
+        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+        document.getElementById('tabLogin').style.background = tab === 'login' ? 'var(--primary)' : '#999';
+        document.getElementById('tabRegister').style.background = tab === 'register' ? 'var(--primary)' : '#999';
+    }
 
-html+=`
-<div class="card">
-<img src="${p.image}">
-<div class="card-info">
-<div>${p.name}</div>
-<div class="price">R$ ${p.price}</div>
+    async function handleLogin(e) {
+        e.preventDefault();
+        try {
+            await auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPass').value);
+            closeLogin();
+            showNotification('Login realizado!');
+        } catch(err) {
+            showNotification('Erro: ' + err.message);
+        }
+    }
 
-<button class="btn" onclick="copy('${p.affiliate}')">
-Afiliado
-</button>
-</div>
-</div>
-`;
-});
+    async function handleRegister(e) {
+        e.preventDefault();
+        try {
+            await auth.createUserWithEmailAndPassword(document.getElementById('regEmail').value, document.getElementById('regPass').value);
+            // Save customer data
+            await db.collection('customers').add({
+                email: document.getElementById('regEmail').value,
+                name: document.getElementById('regName').value,
+                phone: document.getElementById('regPhone').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            closeLogin();
+            showNotification('Conta criada!');
+        } catch(err) {
+            showNotification('Erro: ' + err.message);
+        }
+    }
 
-products.innerHTML=html;
-}
-load();
+    // AFFILIATE
+    function openAffiliate() { document.getElementById('affiliateModal').classList.add('active'); }
+    function closeAffiliate() { document.getElementById('affiliateModal').classList.remove('active'); }
+    
+    async function handleAffiliateRegister(e) {
+        e.preventDefault();
+        try {
+            await db.collection('affiliates').add({
+                name: e.target[0].value,
+                cpf: e.target[1].value,
+                email: e.target[2].value,
+                phone: e.target[3].value,
+                instagram: e.target[4].value,
+                platform: e.target[5].value,
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            closeAffiliate();
+            showNotification('Cadastro enviado! Analisaremos em até 24h.');
+            e.target.reset();
+        } catch(err) {
+            showNotification('Erro: ' + err.message);
+        }
+    }
 
-/* ADMIN */
-async function loadAdmin(){
-const snap=await getDocs(collection(db,"products"));
-let html="";
+    // ADMIN LOAD DATA
+    async function loadOrders() {
+        const container = document.getElementById('ordersList');
+        try {
+            const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
+            if(snapshot.empty) {
+                container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Nenhum pedido.</p>';
+                return;
+            }
+            
+            let html = '';
+            snapshot.forEach(doc => {
+                const order = doc.data();
+                html += `
+                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <strong>Pedido #${doc.id.substr(0,8)}</strong>
+                            <span style="background:#fff3cd; color:#856404; padding:4px 8px; border-radius:4px; font-size:12px;">${order.status}</span>
+                        </div>
+                        <div style="font-size:13px; color:#666; margin-bottom:8px;">
+                            Cliente: ${order.customer.email}<br>
+                            Total: <strong style="color:var(--primary);">R$ ${order.total.toFixed(2)}</strong>
+                        </div>
+                        <div style="font-size:12px; color:#999;">
+                            ${order.items.map(i => `• ${i.name} x${i.qty}`).join('<br>')}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch(err) {
+            container.innerHTML = '<p style="text-align:center; color:#f44;">Erro ao carregar</p>';
+        }
+    }
 
-snap.forEach(d=>{
-let p=d.data();
+    async function loadAffiliates() {
+        const container = document.getElementById('affiliatesList');
+        try {
+            const snapshot = await db.collection('affiliates').get();
+            if(snapshot.empty) {
+                container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Nenhum cadastro.</p>';
+                return;
+            }
+            
+            let html = '';
+            snapshot.forEach(doc => {
+                const aff = doc.data();
+                html += `
+                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px;">
+                        <strong>${aff.name}</strong><br>
+                        <span style="font-size:13px; color:#666;">${aff.email} | ${aff.phone}</span><br>
+                        <span style="font-size:12px; color:#999;">Instagram: ${aff.instagram || 'N/A'} | Platform: ${aff.platform}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch(err) {
+            container.innerHTML = '<p style="text-align:center; color:#f44;">Erro ao carregar</p>';
+        }
+    }
 
-html+=`
-<div>
-${p.name} -
-<span class="${p.stock<10?'low':'ok'}">${p.stock}</span>
-<button onclick="del('${d.id}')">X</button>
-</div>
-`;
-});
-
-adminList.innerHTML=html;
-}
-loadAdmin();
-
-window.del=id=>{
-deleteDoc(doc(db,"products",id));
-loadAdmin();
-};
-
-/* COPY */
-window.copy=link=>{
-navigator.clipboard.writeText(link);
-alert("Link copiado");
-};
-
-/* UI */
-window.openLogin=()=>loginModal.style.display="block";
-
+    // UTILS
+    function filterProducts(cat) { loadProducts(cat); }
+    function showHome() { loadProducts('all'); }
+    function toggleUserMenu() { if(window.currentUser) openAdmin(); else openLogin(); }
+    
+    function showNotification(msg) {
+        const n = document.getElementById('notification');
+        n.textContent = msg;
+        n.classList.add('show');
+        setTimeout(() => n.classList.remove('show'), 3000);
+    }
 </script>
 
 </body>
-</html>
+  </html>
