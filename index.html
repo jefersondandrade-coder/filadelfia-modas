@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filadélfia Modas | Nível Profissional</title>
+    <title>Filadélfia Modas | Loja Oficial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -15,190 +15,16 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); padding-bottom: 70px; }
 
-        /* HEADER ORIGINAL PRESERVADO */
+        /* HEADER - MANTIDO ORIGINAL */
         header { background: linear-gradient(135deg, #f53d2d 0%, #f63 100%); padding: 12px 15px; position: sticky; top:0; z-index: 1000; display: flex; align-items: center; gap: 10px; }
         .search-container { background: #fff; display: flex; align-items: center; padding: 10px; border-radius: 4px; flex: 1; }
         .search-container input { border:none; outline:none; width: 100%; font-size: 14px; }
         .head-icons { color: #fff; display: flex; gap: 15px; font-size: 20px; }
 
-        /* BANNERS E PRODUTOS (LAYOUT AMARELO) */
-        .banner-principal { width: 100%; height: 200px; background: #eee; overflow: hidden; }
+        /* BANNER PRINCIPAL - MANTIDO */
+        .banner-principal { width: 100%; height: 200px; background: #eee; overflow: hidden; margin-bottom: 10px; }
         .banner-principal img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* GRID DE PRODUTOS - MANTIDO */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-        .product-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .p-media { aspect-ratio: 1/1; background: #f9f9f9; }
-        .p-media img, .p-media video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* PAINEL ADMIN PROFISSIONAL (OVERLAY) */
-        #adminPanel { 
-            position: fixed; top: 0; right: -100%; width: 100%; height: 100%; 
-            background: #fff; z-index: 5000; transition: 0.4s; overflow-y: auto;
-        }
-        #adminPanel.active { right: 0; }
-        .admin-header { background: #222; color: #fff; padding: 20px; display: flex; justify-content: space-between; }
-        .admin-body { padding: 20px; }
-        
-        /* GRIDS DE UPLOAD COM PREVIEW */
-        .upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
-        .upload-slot { 
-            height: 100px; border: 2px dashed #ccc; border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; 
-            position: relative; overflow: hidden; background: #fdfdfd;
-        }
-        .upload-slot img, .upload-slot video { width: 100%; height: 100%; object-fit: cover; position: absolute; }
-        .upload-slot input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
-        .upload-slot i { color: #ccc; font-size: 24px; }
-
-        /* FORMULÁRIO */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
-        .btn-save { width: 100%; background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="search-container">
-        <i class="fas fa-search" style="color:#ccc"></i>
-        <input type="text" placeholder="Buscar na Filadélfia Modas...">
-    </div>
-    <div class="head-icons">
-        <i class="fas fa-cog" onclick="abrirAdmin()"></i>
-        <i class="fas fa-shopping-cart"></i>
-    </div>
-</header>
-
-<div class="banner-principal">
-    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800" id="mainBanner">
-</div>
-
-<div class="product-grid" id="vitrine">
-    </div>
-
-<div id="adminPanel">
-    <div class="admin-header">
-        <h3>GERENCIAR LOJA</h3>
-        <i class="fas fa-times" onclick="fecharAdmin()" style="font-size: 24px;"></i>
-    </div>
-    <div class="admin-body">
-        <div class="form-group">
-            <label>Título do Produto</label>
-            <input type="text" id="pTitle" placeholder="Ex: Conjunto Amarelo Verão">
-        </div>
-        
-        <div class="form-group">
-            <label>Fotos (Até 8) e Vídeo (1)</label>
-            <div class="upload-grid" id="mediaGrid">
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot"><i class="fas fa-camera"></i><input type="file" accept="image/*" onchange="previewMedia(this)"></div>
-                <div class="upload-slot" style="border-color: var(--primary);"><i class="fas fa-video" style="color: var(--primary);"></i><input type="file" accept="video/mp4" onchange="previewMedia(this, true)"></div>
-            </div>
-        </div>
-
-        <div style="display:flex; gap:10px">
-            <div class="form-group" style="flex:1">
-                <label>Preço R$</label>
-                <input type="number" id="pPrice" placeholder="90.90">
-            </div>
-            <div class="form-group" style="flex:1">
-                <label>Cor Principal</label>
-                <input type="text" id="pColor" placeholder="Amarelo">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Descrição e Tamanhos</label>
-            <textarea id="pDesc" rows="3" placeholder="Tamanhos: P, M, G..."></textarea>
-        </div>
-
-        <button class="btn-save" onclick="salvarProduto()">PUBLICAR PRODUTO</button>
-        <p onclick="sairAdmin()" style="text-align:center; color:red; margin-top:20px; font-size:13px; cursor:pointer;">Sair da Conta</p>
-    </div>
-</div>
-
-<script>
-    // Configurações do seu Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
-        authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
-        projectId: "loja-filadelphia-modas-mundial",
-        storageBucket: "loja-filadelphia-modas-mundial.firebasestorage.app",
-        messagingSenderId: "515015337156",
-        appId: "1:515015337156:web:79f689c6849285aa13d591"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // MOSTRAR PREVIEW DAS FOTOS AO SELECIONAR
-    function previewMedia(input, isVideo = false) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            const slot = input.parentElement;
-            
-            reader.onload = function(e) {
-                // Remove ícone antigo
-                const icon = slot.querySelector('i');
-                if(icon) icon.style.display = 'none';
-                
-                // Remove preview antigo se houver
-                const oldMedia = slot.querySelector('img, video');
-                if(oldMedia) oldMedia.remove();
-
-                if(isVideo) {
-                    const video = document.createElement('video');
-                    video.src = e.target.result;
-                    video.muted = true; video.autoplay = true; video.loop = true;
-                    slot.appendChild(video);
-                } else {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    slot.appendChild(img);
-                }
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // CONTROLE DO PAINEL
-    function abrirAdmin() {
-        let senha = prompt("Senha Admin:");
-        if(senha === "123") document.getElementById('adminPanel').classList.add('active');
-    }
-    function fecharAdmin() { document.getElementById('adminPanel').classList.remove('active'); }
-    function sairAdmin() { location.reload(); }
-
-    // SALVAR NO BANCO
-    async function salvarProduto() {
-        const titulo = document.getElementById('pTitle').value;
-        const preco = document.getElementById('pPrice').value;
-
-        if(!titulo || !preco) {
-            alert("Título e Preço são obrigatórios!");
-            return;
-        }
-
-        alert("Salvando produto... Aguarde a confirmação.");
-        
-        db.collection("produtos").add({
-            nome: titulo,
-            valor: preco,
-            cor: document.getElementById('pColor').value,
-            descricao: document.getElementById('pDesc').value,
-            data: new Date()
-        }).then(() => {
-            alert("Produto Publicado com Sucesso!");
-            fecharAdmin();
-        }).catch(err => alert("Erro ao salvar: " + err));
-    }
-</script>
-
-</body>
-</html>
-            
+        .product-card { background: #fff; border-radius: 
