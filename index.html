@@ -87,10 +87,10 @@
         .close-btn { background:none; border:none; font-size:24px; cursor:pointer; color:#999; }
 
         /* ADMIN PANEL */
-        #adminPanel { position:fixed; top:0; right:-100%; width:100%; max-width:500px; height:100%; background:white; z-index:3000; transition:0.3s; overflow-y:auto; box-shadow:-2px 0 10px rgba(0,0,0,0.3); }
+        #adminPanel { position:fixed; top:0; right:-100%; width:100%; max-width:600px; height:100%; background:white; z-index:3000; transition:0.3s; overflow-y:auto; box-shadow:-2px 0 10px rgba(0,0,0,0.3); }
         #adminPanel.active { right:0; }
         .admin-header { background:#222; color:white; padding:20px; display:flex; justify-content:space-between; align-items:center; }
-        .admin-tabs { display:flex; background:#f5f5f5; border-bottom:2px solid #eee; }
+        .admin-tabs { display:flex; background:#f5f5f5; border-bottom:2px solid #eee; position:sticky; top:0; z-index:10; }
         .admin-tab { flex:1; padding:15px; text-align:center; cursor:pointer; font-weight:600; color:#666; border-bottom:3px solid transparent; }
         .admin-tab.active { color:var(--primary); border-bottom-color:var(--primary); background:white; }
         .admin-body { padding:20px; }
@@ -113,6 +113,21 @@
         .video-slot { grid-column:span 3; border-color:var(--primary); }
         .video-slot i { color:var(--primary); }
 
+        /* VARIAÇÕES POR COR E TAMANHO */
+        .variacoes-section { background:#f9f9f9; padding:20px; border-radius:8px; margin:20px 0; }
+        .variacao-item { background:white; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #eee; }
+        .variacao-header { display:flex; align-items:center; gap:15px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #f0f0f0; }
+        .variacao-img { width:60px; height:60px; object-fit:cover; border-radius:6px; border:2px solid var(--primary); }
+        .variacao-inputs { flex:1; }
+        .variacao-row { display:flex; gap:10px; margin-bottom:8px; }
+        .variacao-row label { font-size:12px; font-weight:600; color:#666; display:block; margin-bottom:3px; }
+        .variacao-row input { flex:1; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:13px; }
+        .tamanhos-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:5px; }
+        .tamanho-chip { display:inline-flex; align-items:center; gap:5px; background:#f5f5f5; padding:5px 10px; border-radius:4px; font-size:12px; }
+        .tamanho-chip input { width:auto; margin:0; }
+        .add-variacao-btn { width:100%; padding:12px; border:2px dashed var(--primary); background:white; color:var(--primary); border-radius:8px; cursor:pointer; font-weight:600; margin-top:10px; }
+        .add-variacao-btn:hover { background:#fff5f2; }
+
         /* FORMS */
         .form-group { margin-bottom:15px; }
         .form-group label { display:block; font-weight:600; margin-bottom:5px; font-size:13px; color:#333; }
@@ -125,6 +140,7 @@
 
         .btn-save { width:100%; background:var(--primary); color:white; border:none; padding:15px; border-radius:8px; font-weight:bold; font-size:16px; cursor:pointer; margin-top:20px; }
         .btn-save:active { background:#d63214; }
+        .btn-save:disabled { background:#ccc; cursor:not-allowed; }
 
         /* CARRINHO */
         .cart-item { display:flex; gap:15px; padding:15px 0; border-bottom:1px solid #eee; }
@@ -143,6 +159,30 @@
         .notification { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#333; color:white; padding:12px 24px; border-radius:6px; z-index:5000; display:none; font-size:14px; }
         .notification.show { display:block; animation:fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity:0; transform:translateX(-50%) translateY(-20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+
+        /* DETALHES DO PRODUTO */
+        .product-detail-modal .modal-content { max-width:90%; }
+        .product-images { display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:20px; }
+        .main-image { width:100%; aspect-ratio:1; background:#f5f5f5; border-radius:8px; overflow:hidden; }
+        .main-image img { width:100%; height:100%; object-fit:cover; }
+        .thumbnail-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
+        .thumbnail { aspect-ratio:1; border:2px solid #ddd; border-radius:6px; overflow:hidden; cursor:pointer; }
+        .thumbnail.active { border-color:var(--primary); }
+        .thumbnail img { width:100%; height:100%; object-fit:cover; }
+        .product-info-detail h2 { font-size:20px; margin-bottom:10px; }
+        .product-price-detail { font-size:28px; color:var(--primary); font-weight:bold; margin:15px 0; }
+        .product-old-price { font-size:16px; color:#999; text-decoration:line-through; margin-left:10px; }
+        .color-selection, .size-selection { margin:20px 0; }
+        .color-selection h3, .size-selection h3 { font-size:14px; margin-bottom:10px; color:#333; }
+        .color-options { display:flex; gap:10px; flex-wrap:wrap; }
+        .color-option { padding:10px 20px; border:2px solid #ddd; border-radius:6px; cursor:pointer; font-weight:600; transition:0.2s; }
+        .color-option:hover { border-color:var(--primary); }
+        .color-option.selected { border-color:var(--primary); background:#fff5f2; color:var(--primary); }
+        .size-options { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+        .size-option { width:50px; height:50px; border:2px solid #ddd; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:600; transition:0.2s; }
+        .size-option:hover { border-color:var(--primary); }
+        .size-option.selected { border-color:var(--primary); background:#fff5f2; color:var(--primary); }
+        .size-option.disabled { opacity:0.3; cursor:not-allowed; background:#f5f5f5; }
     </style>
 </head>
 <body>
@@ -343,6 +383,19 @@
     </div>
 </div>
 
+<!-- MODAL DETALHES DO PRODUTO -->
+<div class="modal product-detail-modal" id="productDetailModal">
+    <div class="modal-content" style="max-width:800px;">
+        <div class="modal-header">
+            <h3>Detalhes do Produto</h3>
+            <button class="close-btn" onclick="closeProductDetail()">&times;</button>
+        </div>
+        <div class="modal-body" id="productDetailContent">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
+</div>
+
 <!-- PAINEL ADMIN -->
 <div id="adminPanel">
     <div class="admin-header">
@@ -370,6 +423,15 @@
             <div style="font-size:12px; color:#666; margin-top:5px;">
                 * Até 8 imagens (JPG/PNG) + 1 vídeo • Clique em "CAPA" para definir a principal
             </div>
+        </div>
+
+        <!-- VARIAÇÕES POR COR E TAMANHO -->
+        <div class="variacoes-section" id="variacaoSection" style="display:none;">
+            <h3 style="margin-bottom:15px; color:#333;">🎨 Variações por Cor e Tamanho</h3>
+            <div id="variacaoList"></div>
+            <button type="button" class="add-variacao-btn" onclick="addVariacaoManual()">
+                <i class="fas fa-plus"></i> Adicionar Variação de Cor
+            </button>
         </div>
 
         <div class="form-row">
@@ -403,15 +465,15 @@
         <div class="form-group">
             <label>Tamanhos Disponíveis *</label>
             <div class="checkbox-group">
-                <label class="checkbox-item"><input type="checkbox" value="PP"> PP</label>
-                <label class="checkbox-item"><input type="checkbox" value="P"> P</label>
-                <label class="checkbox-item"><input type="checkbox" value="M"> M</label>
-                <label class="checkbox-item"><input type="checkbox" value="G"> G</label>
-                <label class="checkbox-item"><input type="checkbox" value="GG"> GG</label>
-                <label class="checkbox-item"><input type="checkbox" value="G1"> G1</label>
-                <label class="checkbox-item"><input type="checkbox" value="G2"> G2</label>
-                <label class="checkbox-item"><input type="checkbox" value="G3"> G3</label>
-                <label class="checkbox-item"><input type="checkbox" value="G4"> G4</label>
+                <label class="checkbox-item"><input type="checkbox" value="PP" class="size-check"> PP</label>
+                <label class="checkbox-item"><input type="checkbox" value="P" class="size-check"> P</label>
+                <label class="checkbox-item"><input type="checkbox" value="M" class="size-check"> M</label>
+                <label class="checkbox-item"><input type="checkbox" value="G" class="size-check"> G</label>
+                <label class="checkbox-item"><input type="checkbox" value="GG" class="size-check"> GG</label>
+                <label class="checkbox-item"><input type="checkbox" value="G1" class="size-check"> G1</label>
+                <label class="checkbox-item"><input type="checkbox" value="G2" class="size-check"> G2</label>
+                <label class="checkbox-item"><input type="checkbox" value="G3" class="size-check"> G3</label>
+                <label class="checkbox-item"><input type="checkbox" value="G4" class="size-check"> G4</label>
             </div>
             <div style="margin-top:10px; font-size:12px; color:#666;">Ou numeração: 34, 36, 38, 40, 42, 44, 46, 48, 50, 52</div>
             <input type="text" id="prodSizes" placeholder="Ex: 34, 36, 38, 40" style="margin-top:8px;">
@@ -433,7 +495,7 @@
             </div>
         </div>
 
-        <button class="btn-save" onclick="saveProduct()">
+        <button class="btn-save" onclick="saveProduct()" id="btnSaveProduct">
             <i class="fas fa-save"></i> PUBLICAR PRODUTO
         </button>
     </div>
@@ -475,6 +537,7 @@
     window.currentUser = null;
     window.uploadedMedia = [];
     window.coverIndex = 0;
+    window.variacoes = [];
 
     // INIT
     document.addEventListener('DOMContentLoaded', () => {
@@ -487,9 +550,6 @@
                 document.getElementById('userIcon').style.display = 'none';
                 document.getElementById('userAvatar').style.display = 'flex';
                 document.getElementById('userAvatar').textContent = user.email.charAt(0).toUpperCase();
-                if(user.email === 'admin@filadelphiamodas.com.br') {
-                    // Admin logado
-                }
             } else {
                 document.getElementById('userIcon').style.display = 'block';
                 document.getElementById('userAvatar').style.display = 'none';
@@ -503,6 +563,7 @@
         grid.innerHTML = '';
         window.uploadedMedia = [];
         window.coverIndex = 0;
+        window.variacoes = [];
         
         for(let i=0; i<8; i++) {
             const slot = createUploadSlot(i, false);
@@ -511,6 +572,9 @@
         
         const videoSlot = createUploadSlot(8, true);
         grid.appendChild(videoSlot);
+        
+        document.getElementById('variacaoSection').style.display = 'none';
+        document.getElementById('variacaoList').innerHTML = '';
     }
 
     function createUploadSlot(index, isVideo) {
@@ -552,7 +616,13 @@
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     slot.appendChild(img);
+                    
+                    // Adicionar variação automaticamente
+                    setTimeout(() => addVariacaoParaImagem(index, e.target.result), 100);
                 }
+                
+                // Mostrar seção de variações
+                document.getElementById('variacaoSection').style.display = 'block';
             };
             reader.readAsDataURL(file);
         }
@@ -566,7 +636,12 @@
         slot.classList.remove('filled', 'is-capa');
         const media = slot.querySelector('img, video');
         if(media) media.remove();
+        const input = slot.querySelector('input');
         input.value = '';
+        
+        // Remover variação correspondente
+        window.variacoes = window.variacoes.filter(v => v.imageIndex !== index);
+        renderVariacoes();
     }
 
     function setAsCover(index, event) {
@@ -579,6 +654,94 @@
             });
             showNotification('Imagem definida como capa!');
         }
+    }
+
+    // VARIAÇÕES
+    function addVariacaoParaImagem(index, imageUrl) {
+        const variacao = {
+            imageIndex: index,
+            imageUrl: imageUrl,
+            cor: '',
+            tamanhos: []
+        };
+        window.variacoes.push(variacao);
+        renderVariacoes();
+    }
+
+    function addVariacaoManual() {
+        const variacao = {
+            imageIndex: window.variacoes.length,
+            imageUrl: null,
+            cor: '',
+            tamanhos: []
+        };
+        window.variacoes.push(variacao);
+        renderVariacoes();
+    }
+
+    function renderVariacoes() {
+        const container = document.getElementById('variacaoList');
+        if(window.variacoes.length === 0) {
+            container.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">Nenhuma variação cadastrada</p>';
+            return;
+        }
+        
+        let html = '';
+        window.variacoes.forEach((v, idx) => {
+            html += `
+                <div class="variacao-item">
+                    <div class="variacao-header">
+                        ${v.imageUrl ? `<img src="${v.imageUrl}" class="variacao-img">` : '<div class="variacao-img" style="background:#ddd;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="color:#999;"></i></div>'}
+                        <div class="variacao-inputs">
+                            <div class="variacao-row">
+                                <div style="flex:1;">
+                                    <label>Cor/Nome da Variação *</label>
+                                    <input type="text" placeholder="Ex: Preto, Azul Marinho..." value="${v.cor}" onchange="updateVariacao(${idx}, 'cor', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="removeVariacao(${idx})" style="background:#f44;color:white;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="variacao-row">
+                        <div style="flex:1;">
+                            <label>Tamanhos Disponíveis para esta cor:</label>
+                            <div class="tamanhos-grid">
+                                ${['PP','P','M','G','GG','G1','G2','G3','G4'].map(t => `
+                                    <label class="tamanho-chip">
+                                        <input type="checkbox" value="${t}" ${v.tamanhos.includes(t) ? 'checked' : ''} onchange="updateVariacaoTamanho(${idx}, '${t}')">
+                                        ${t}
+                                    </label>
+                                `).join('')}
+                            </div>
+                            <input type="text" placeholder="Ou numeração: 34, 36, 38..." style="margin-top:8px; width:100%;" value="${v.tamanhosNum || ''}" onchange="updateVariacao(${idx}, 'tamanhosNum', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function updateVariacao(idx, field, value) {
+        if(window.variacoes[idx]) {
+            window.variacoes[idx][field] = value;
+        }
+    }
+
+    function updateVariacaoTamanho(idx, tamanho) {
+        if(window.variacoes[idx]) {
+            const checkbox = event.target;
+            if(checkbox.checked) {
+                window.variacoes[idx].tamanhos.push(tamanho);
+            } else {
+                window.variacoes[idx].tamanhos = window.variacoes[idx].tamanhos.filter(t => t !== tamanho);
+            }
+        }
+    }
+
+    function removeVariacao(idx) {
+        window.variacoes.splice(idx, 1);
+        renderVariacoes();
     }
 
     // ADMIN
@@ -612,25 +775,40 @@
         }
     }
 
-    // SAVE PRODUCT
+    // SAVE PRODUCT - CORRIGIDO
     async function saveProduct() {
         const name = document.getElementById('prodName').value.trim();
         const price = document.getElementById('prodPrice').value;
         const category = document.getElementById('prodCategory').value;
         
-        if(!name || !price || !category) {
-            showNotification('Preencha título, preço e categoria!');
+        if(!name) {
+            showNotification('❌ Digite o título do produto!');
+            document.getElementById('prodName').focus();
+            return;
+        }
+        if(!price || parseFloat(price) <= 0) {
+            showNotification('❌ Digite um preço válido!');
+            document.getElementById('prodPrice').focus();
+            return;
+        }
+        if(!category) {
+            showNotification('❌ Selecione uma categoria!');
+            document.getElementById('prodCategory').focus();
             return;
         }
         
         const validImages = window.uploadedMedia.filter((m, i) => m && m.type === 'image');
         if(validImages.length === 0) {
-            showNotification('Adicione pelo menos 1 foto!');
+            showNotification('❌ Adicione pelo menos 1 foto!');
             return;
         }
         
+        // Verificar se tem variações preenchidas
+        const variacoesValidas = window.variacoes.filter(v => v.cor && v.cor.trim() !== '');
+        
         document.getElementById('loadingOverlay').classList.add('active');
-        document.getElementById('loadingText').textContent = 'Salvando produto...';
+        document.getElementById('loadingText').textContent = 'Salvando produto... Aguarde.';
+        document.getElementById('btnSaveProduct').disabled = true;
         
         try {
             const productData = {
@@ -646,6 +824,8 @@
                 images: [],
                 video: null,
                 coverIndex: window.coverIndex,
+                variacoes: variacoesValidas,
+                hasVariacoes: variacoesValidas.length > 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 active: true
             };
@@ -654,6 +834,7 @@
             for(let i=0; i<window.uploadedMedia.length; i++) {
                 const media = window.uploadedMedia[i];
                 if(media && media.type === 'image') {
+                    document.getElementById('loadingText').textContent = `Enviando imagem ${i+1}/${validImages.length}...`;
                     const response = await fetch(media.data);
                     const blob = await response.blob();
                     const filename = `products/${Date.now()}_${i}.jpg`;
@@ -661,6 +842,7 @@
                     const url = await uploadTask.ref.getDownloadURL();
                     productData.images.push(url);
                 } else if(media && media.type === 'video') {
+                    document.getElementById('loadingText').textContent = 'Enviando vídeo...';
                     const response = await fetch(media.data);
                     const blob = await response.blob();
                     const filename = `products/video_${Date.now()}.mp4`;
@@ -669,9 +851,12 @@
                 }
             }
             
+            document.getElementById('loadingText').textContent = 'Salvando no banco de dados...';
             await db.collection('products').add(productData);
-            showNotification('✅ Produto publicado!');
             
+            showNotification('✅ Produto publicado com sucesso!');
+            
+            // Limpar formulário
             document.getElementById('prodName').value = '';
             document.getElementById('prodPrice').value = '';
             document.getElementById('prodOldPrice').value = '';
@@ -688,10 +873,11 @@
             loadProducts();
             
         } catch(err) {
-            console.error(err);
-            showNotification('❌ Erro: ' + err.message);
+            console.error('Erro ao salvar:', err);
+            showNotification('❌ Erro ao salvar: ' + err.message);
         } finally {
             document.getElementById('loadingOverlay').classList.remove('active');
+            document.getElementById('btnSaveProduct').disabled = false;
         }
     }
 
@@ -704,7 +890,7 @@
             
             const snapshot = await q.get();
             if(snapshot.empty) {
-                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Nenhum produto.</div>';
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Nenhum produto cadastrado ainda.</div>';
                 return;
             }
             
@@ -716,6 +902,7 @@
                 
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                card.onclick = () => openProductDetail(doc.id, p);
                 card.innerHTML = `
                     ${discount > 0 ? `<div class="p-badge">-${discount}%</div>` : ''}
                     <div class="p-media">
@@ -727,31 +914,170 @@
                         ${p.color ? `<div style="font-size:12px; color:#666; margin-bottom:5px;"><i class="fas fa-palette"></i> ${p.color}</div>` : ''}
                         <div class="p-price">R$ ${p.price.toFixed(2).replace('.', ',')}</div>
                         ${p.oldPrice ? `<div style="font-size:13px; color:#999; text-decoration:line-through; margin-bottom:8px;">R$ ${p.oldPrice.toFixed(2).replace('.', ',')}</div>` : ''}
-                        <button class="p-btn" onclick="addToCart('${doc.id}', '${p.name}', ${p.price}, '${coverImage}')">
-                            <i class="fas fa-shopping-cart"></i> COMPRAR NO PIX
+                        <button class="p-btn" onclick="event.stopPropagation(); quickAddToCart('${doc.id}', '${p.name}', ${p.price}, '${coverImage}')">
+                            <i class="fas fa-shopping-cart"></i> COMPRAR
                         </button>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         } catch(err) {
-            console.error(err);
-            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Erro ao carregar.</div>';
+            console.error('Erro ao carregar:', err);
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Erro ao carregar produtos.</div>';
         }
+    }
+
+    // PRODUCT DETAIL
+    function openProductDetail(id, product) {
+        const modal = document.getElementById('productDetailModal');
+        const content = document.getElementById('productDetailContent');
+        
+        const coverImage = product.images[product.coverIndex] || product.images[0];
+        const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+        
+        let variacoesHtml = '';
+        if(product.hasVariacoes && product.variacoes && product.variacoes.length > 0) {
+            variacoesHtml = `
+                <div class="color-selection">
+                    <h3>Escolha a Cor:</h3>
+                    <div class="color-options" id="colorOptions">
+                        ${product.variacoes.map((v, idx) => `
+                            <div class="color-option ${idx===0?'selected':''}" onclick="selectColor(${idx}, '${v.cor}')">
+                                ${v.cor}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="size-selection">
+                    <h3>Escolha o Tamanho:</h3>
+                    <div class="size-options" id="sizeOptions">
+                        ${product.variacoes[0].tamanhos.map(t => `
+                            <div class="size-option" onclick="selectSize('${t}')">${t}</div>
+                        `).join('')}
+                        ${product.variacoes[0].tamanhosNum ? `<div style="width:100%;margin-top:10px;font-size:13px;color:#666;">Numeração: ${product.variacoes[0].tamanhosNum}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        } else {
+            variacoesHtml = `
+                <div class="size-selection">
+                    <h3>Tamanhos Disponíveis:</h3>
+                    <div class="size-options">
+                        ${product.sizes.split(',').map(s => `
+                            <div class="size-option" onclick="selectSize('${s.trim()}')">${s.trim()}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        content.innerHTML = `
+            <div class="product-images">
+                <div class="main-image">
+                    <img src="${coverImage}" id="mainProductImage">
+                </div>
+                ${product.images.length > 1 ? `
+                    <div class="thumbnail-grid">
+                        ${product.images.map((img, idx) => `
+                            <div class="thumbnail ${idx===0?'active':''}" onclick="changeMainImage('${img}', this)">
+                                <img src="${img}">
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="product-info-detail">
+                <h2>${product.name}</h2>
+                <div class="product-price-detail">
+                    R$ ${product.price.toFixed(2).replace('.', ',')}
+                    ${product.oldPrice ? `<span class="product-old-price">R$ ${product.oldPrice.toFixed(2).replace('.', ',')}</span>` : ''}
+                    ${discount > 0 ? `<span style="background:#f44;color:white;padding:4px 8px;border-radius:4px;font-size:14px;margin-left:10px;">-${discount}%</span>` : ''}
+                </div>
+                
+                ${product.description ? `<p style="color:#666; line-height:1.6; margin:15px 0;">${product.description}</p>` : ''}
+                
+                ${variacoesHtml}
+                
+                <button class="btn-save" onclick="addToCartWithVariation('${id}', '${product.name}', ${product.price}, '${coverImage}')" style="margin-top:20px;">
+                    <i class="fas fa-shopping-cart"></i> ADICIONAR AO CARRINHO
+                </button>
+            </div>
+        `;
+        
+        window.selectedColor = product.hasVariacoes ? product.variacoes[0].cor : null;
+        window.selectedSize = null;
+        window.currentProductId = id;
+        window.currentProductPrice = product.price;
+        window.currentProductImage = coverImage;
+        
+        modal.classList.add('active');
+    }
+
+    function changeMainImage(src, thumb) {
+        document.getElementById('mainProductImage').src = src;
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        window.currentProductImage = src;
+    }
+
+    function selectColor(idx, cor) {
+        window.selectedColor = cor;
+        document.querySelectorAll('.color-option').forEach((el, i) => {
+            el.classList.toggle('selected', i === idx);
+        });
+        
+        // Atualizar tamanhos
+        const product = window.currentProduct; // Precisa armazenar o produto atual
+        if(product && product.variacoes && product.variacoes[idx]) {
+            const sizesContainer = document.getElementById('sizeOptions');
+            sizesContainer.innerHTML = `
+                ${product.variacoes[idx].tamanhos.map(t => `
+                    <div class="size-option" onclick="selectSize('${t}')">${t}</div>
+                `).join('')}
+                ${product.variacoes[idx].tamanhosNum ? `<div style="width:100%;margin-top:10px;font-size:13px;color:#666;">Numeração: ${product.variacoes[idx].tamanhosNum}</div>` : ''}
+            `;
+        }
+    }
+
+    function selectSize(tamanho) {
+        window.selectedSize = tamanho;
+        document.querySelectorAll('.size-option').forEach(el => {
+            el.classList.toggle('selected', el.textContent.trim() === tamanho);
+        });
+    }
+
+    function quickAddToCart(id, name, price, image) {
+        window.cart.push({ id, name, price, image, qty: 1, color: null, size: null });
+        updateCartCount();
+        showNotification('✅ Adicionado ao carrinho!');
+    }
+
+    function addToCartWithVariation(id, name, price, image) {
+        if(!window.selectedSize) {
+            showNotification('❌ Selecione um tamanho!');
+            return;
+        }
+        
+        window.cart.push({ 
+            id, 
+            name, 
+            price, 
+            image, 
+            qty: 1, 
+            color: window.selectedColor, 
+            size: window.selectedSize 
+        });
+        updateCartCount();
+        showNotification('✅ Adicionado ao carrinho!');
+        closeProductDetail();
+    }
+
+    function closeProductDetail() {
+        document.getElementById('productDetailModal').classList.remove('active');
     }
 
     // CART
-    function addToCart(id, name, price, image) {
-        const existing = window.cart.find(item => item.id === id);
-        if(existing) {
-            existing.qty++;
-        } else {
-            window.cart.push({ id, name, price, image, qty: 1 });
-        }
-        updateCartCount();
-        showNotification('Adicionado ao carrinho!');
-    }
-
     function updateCartCount() {
         const count = window.cart.reduce((sum, item) => sum + item.qty, 0);
         document.getElementById('cartCount').textContent = count;
@@ -774,6 +1100,8 @@
                         <img src="${item.image}" alt="${item.name}">
                         <div class="cart-item-info">
                             <div class="cart-item-name">${item.name}</div>
+                            ${item.color ? `<div style="font-size:12px;color:#666;">Cor: ${item.color}</div>` : ''}
+                            ${item.size ? `<div style="font-size:12px;color:#666;">Tamanho: ${item.size}</div>` : ''}
                             <div class="cart-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
                             <div class="cart-item-qty">
                                 <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
@@ -809,17 +1137,24 @@
 
     function checkout() {
         if(window.cart.length === 0) {
-            showNotification('Carrinho vazio!');
+            showNotification('❌ Carrinho vazio!');
             return;
         }
         
         const total = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const items = window.cart.map(item => `• ${item.name} x${item.qty} - R$ ${(item.price * item.qty).toFixed(2)}`).join('%0A');
+        let items = '';
+        window.cart.forEach(item => {
+            let itemDesc = `• ${item.name}`;
+            if(item.color) itemDesc += ` - Cor: ${item.color}`;
+            if(item.size) itemDesc += ` - Tam: ${item.size}`;
+            itemDesc += ` x${item.qty} - R$ ${(item.price * item.qty).toFixed(2)}`;
+            items += itemDesc + '%0A';
+        });
         
         let msg = `🛍️ *NOVO PEDIDO - FILADÉLPHIA MODAS*%0A%0A`;
         msg += `*Cliente:* ${window.currentUser?.email || 'Não cadastrado'}%0A`;
         msg += `*WhatsApp:* ${window.currentUser?.phoneNumber || 'Não informado'}%0A%0A`;
-        msg += `*Itens:*%0A${items}%0A%0A`;
+        msg += `*Itens:*%0A${items}%0A`;
         msg += `*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*%0A%0A`;
         msg += `_Aguardo confirmação do PIX!_`;
         
@@ -844,7 +1179,7 @@
             window.cart = [];
             updateCartCount();
             closeCart();
-            showNotification('Pedido enviado! Entraremos em contato.');
+            showNotification('✅ Pedido enviado! Entraremos em contato.');
         } catch(err) {
             console.error(err);
         }
@@ -865,9 +1200,9 @@
         try {
             await auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPass').value);
             closeLogin();
-            showNotification('Login realizado!');
+            showNotification('✅ Login realizado!');
         } catch(err) {
-            showNotification('Erro: ' + err.message);
+            showNotification('❌ Erro: ' + err.message);
         }
     }
 
@@ -883,9 +1218,9 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             closeLogin();
-            showNotification('Conta criada!');
+            showNotification('✅ Conta criada!');
         } catch(err) {
-            showNotification('Erro: ' + err.message);
+            showNotification('❌ Erro: ' + err.message);
         }
     }
 
@@ -907,10 +1242,10 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             closeAffiliate();
-            showNotification('Cadastro enviado! Analisaremos em até 24h.');
+            showNotification('✅ Cadastro enviado! Analisaremos em até 24h.');
             e.target.reset();
         } catch(err) {
-            showNotification('Erro: ' + err.message);
+            showNotification('❌ Erro: ' + err.message);
         }
     }
 
@@ -918,34 +1253,37 @@
     async function loadOrders() {
         const container = document.getElementById('ordersList');
         try {
-            const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
+            const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').limit(50).get();
             if(snapshot.empty) {
-                container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Nenhum pedido.</p>';
+                container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Nenhum pedido ainda.</p>';
                 return;
             }
             
             let html = '';
             snapshot.forEach(doc => {
                 const order = doc.data();
+                const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('pt-BR') : 'Data não informada';
                 html += `
-                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px;">
+                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid var(--primary);">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <strong>Pedido #${doc.id.substr(0,8)}</strong>
-                            <span style="background:#fff3cd; color:#856404; padding:4px 8px; border-radius:4px; font-size:12px;">${order.status}</span>
+                            <strong>Pedido #${doc.id.substr(0,8).toUpperCase()}</strong>
+                            <span style="background:#fff3cd; color:#856404; padding:4px 8px; border-radius:4px; font-size:12px;">${order.status || 'pending'}</span>
                         </div>
                         <div style="font-size:13px; color:#666; margin-bottom:8px;">
-                            Cliente: ${order.customer.email}<br>
-                            Total: <strong style="color:var(--primary);">R$ ${order.total.toFixed(2)}</strong>
+                            <div><strong>Cliente:</strong> ${order.customer.email}</div>
+                            <div><strong>Data:</strong> ${date}</div>
+                            <div style="margin-top:5px;"><strong>Total:</strong> <span style="color:var(--primary); font-size:16px;">R$ ${order.total.toFixed(2).replace('.', ',')}</span></div>
                         </div>
-                        <div style="font-size:12px; color:#999;">
-                            ${order.items.map(i => `• ${i.name} x${i.qty}`).join('<br>')}
+                        <div style="background:white; padding:10px; border-radius:4px; font-size:12px; color:#333;">
+                            ${order.items.map(i => `• ${i.name} ${i.color ? '('+i.cor+')' : ''} ${i.size ? 'Tam:'+i.size : ''} x${i.qty}`).join('<br>')}
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
         } catch(err) {
-            container.innerHTML = '<p style="text-align:center; color:#f44;">Erro ao carregar</p>';
+            console.error(err);
+            container.innerHTML = '<p style="text-align:center; color:#f44;">Erro ao carregar pedidos</p>';
         }
     }
 
@@ -954,7 +1292,7 @@
         try {
             const snapshot = await db.collection('affiliates').get();
             if(snapshot.empty) {
-                container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Nenhum cadastro.</p>';
+                container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">Nenhum cadastro de afiliado.</p>';
                 return;
             }
             
@@ -962,15 +1300,17 @@
             snapshot.forEach(doc => {
                 const aff = doc.data();
                 html += `
-                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px;">
-                        <strong>${aff.name}</strong><br>
-                        <span style="font-size:13px; color:#666;">${aff.email} | ${aff.phone}</span><br>
-                        <span style="font-size:12px; color:#999;">Instagram: ${aff.instagram || 'N/A'} | Platform: ${aff.platform}</span>
+                    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #ffeb3b;">
+                        <strong style="font-size:16px;">${aff.name}</strong><br>
+                        <span style="font-size:13px; color:#666;">📧 ${aff.email} | 📱 ${aff.phone}</span><br>
+                        <span style="font-size:12px; color:#999;">📷 Instagram: ${aff.instagram || 'N/A'} | Plataforma: ${aff.platform}</span><br>
+                        <span style="display:inline-block; background:#e3f2fd; color:#1976d2; padding:3px 8px; border-radius:4px; font-size:11px; margin-top:5px;">${aff.status || 'pending'}</span>
                     </div>
                 `;
             });
             container.innerHTML = html;
         } catch(err) {
+            console.error(err);
             container.innerHTML = '<p style="text-align:center; color:#f44;">Erro ao carregar</p>';
         }
     }
@@ -989,4 +1329,4 @@
 </script>
 
 </body>
-  </html>
+                </html>
