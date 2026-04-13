@@ -1327,6 +1327,28 @@
         setTimeout(() => n.classList.remove('show'), 3000);
     }
 </script>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBejYQ8xnwHEq27ile9USnpHVHIw-qv4Js",
+    authDomain: "loja-filadelphia-modas-mundial.firebaseapp.com",
+    projectId: "loja-filadelphia-modas-mundial",
+    storageBucket: "loja-filadelphia-modas-mundial.firebasestorage.app",
+    messagingSenderId: "515015337156",
+    appId: "1:515015337156:web:79f689c6849285aa13d591"
+  };
+
+  // Inicializa o Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Torna o banco de dados acessível para outros scripts
+  window.db = db;
+  console.log("Filadelphia conectado ao Firebase!");
+</script>
+
 
 </body>
                                                                  </html>
